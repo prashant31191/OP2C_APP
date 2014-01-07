@@ -1,0 +1,10 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/share_embedded"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:layout_marginLeft="0dp"
+    android:layout_marginRight="0dp"
+    android:flipInterval="20"
+    android:persistentDrawingCache="animation" > <!-- animation -->
+
+</FrameLayout>

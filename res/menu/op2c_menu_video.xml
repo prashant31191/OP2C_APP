@@ -1,0 +1,16 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item
+        android:icon="@drawable/btn_sort"
+        android:id="@+id/menu_editing"
+        android:orderInCategory="100"
+        android:showAsAction="ifRoom"
+        android:title="編輯"/>
+<!--     <item
+        android:icon="@drawable/btn_sort"
+        android:id="@+id/menu_sorting"
+        android:orderInCategory="100"
+        android:showAsAction="ifRoom"
+        android:title="排序"/> -->
+
+</menu>

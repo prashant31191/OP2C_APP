@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="220dp"
+	android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:layout_margin="10dp"
+    android:background="@drawable/op2c_dialog_header"
+    android:orientation="vertical"
+  >
+        <LinearLayout
+            android:id="@+id/dialog_header"
+            android:layout_alignParentTop="true"
+            
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            
+            android:orientation="vertical" >
+
+            <TextView
+                
+                android:id="@+id/txt_custom_dialog"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:text="是否接受分享資源？"
+                android:textSize="14sp"
+                android:textColor="#000000" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:padding="10dp"
+            android:layout_below="@+id/dialog_header"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="0dp"
+            
+            android:gravity="center"
+            android:orientation="horizontal" >
+
+            <Button
+                android:textSize="14dp"
+                android:id="@+id/btn_custom_yes"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="10dp"
+                android:background="@drawable/btn_sort"
+                android:text="是"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                
+                android:paddingRight="10dp"
+                android:paddingLeft="10dp"
+                android:textColor="#ffffff" />
+
+            <Button
+                android:textSize="14dp"
+                android:id="@+id/btn_custom_no"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:background="@drawable/btn_sort"
+                              android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                
+                android:paddingRight="10dp"
+                android:paddingLeft="10dp"
+                android:textColor="#ffffff"
+                android:text="否"
+                 />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:orientation="vertical" >
+        </LinearLayout>
+
+    </RelativeLayout>

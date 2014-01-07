@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/item_contact"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingLeft="3dp"
+    android:paddingRight="3dp"
+    android:layout_marginTop="3dp"
+    android:layout_marginBottom="3dp"
+    android:descendantFocusability="blocksDescendants"
+    android:orientation="horizontal" >
+
+<!--     <RadioButton
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+        android:id="@+id/rdoCheck"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="" /> -->
+    <ImageView
+        android:id="@+id/photo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="5dp"
+        android:layout_marginLeft="5dp"
+        android:layout_centerVertical="true"
+        android:src="@drawable/webdas_person01_picture" />
+
+    <!--         android:layout_height="?android:attr/listPreferredItemHeight" android:visibility="gone" android:layout_height="wrap_content" -->
+
+    <RelativeLayout
+        android:id="@+id/lytName"
+        android:layout_width="wrap_content"
+        android:layout_height="?android:attr/listPreferredItemHeight"
+        android:layout_alignBottom="@+id/photo"
+        android:layout_marginLeft="5dp"
+        android:layout_toLeftOf="@+id/group"
+        android:layout_toRightOf="@id/photo" >
+
+        <TextView
+            android:id="@+id/text1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:focusable="false"
+            android:gravity="center_vertical"
+            android:singleLine="true"
+            android:text="名字"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textColor="#2B547E"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/phone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentRight="true"
+            android:focusable="false"
+            android:singleLine="true"
+            android:text="電話"
+            android:textColor="#000000"
+            android:textSize="9dp" />
+
+    </RelativeLayout>
+
+    <CheckedTextView
+        android:id="@+id/group"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:text="群組"
+        android:drawableRight="?android:attr/listChoiceIndicatorMultiple"
+        android:gravity="center_vertical"
+        android:paddingLeft="6dip"
+        android:paddingRight="6dip"
+        android:singleLine="true"
+        android:textColor="#000000"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+</RelativeLayout>

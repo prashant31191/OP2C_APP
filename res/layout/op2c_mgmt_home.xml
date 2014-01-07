@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/rootRL"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:keepScreenOn="true" >
+
+<!--     <LinearLayout
+        android:id="@+id/header"
+        android:layout_width="match_parent"
+        android:layout_height="48dip"
+        android:layout_alignParentTop="true"
+       
+        android:gravity="center_horizontal|center_vertical"
+        android:orientation="horizontal"
+        android:scaleType="fitCenter" > android:background="@drawable/bg_head_setup"
+
+        <Button
+            android:id="@+id/btnBack"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            
+            android:text="返回"
+            android:enabled="true"
+            android:visibility="gone"
+            android:textColor="#FFFFFFFF"
+            android:textSize="14sp" >
+            <requestFocus />
+            </Button>
+        <Button
+            android:id="@+id/btnEdit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            
+            android:text="刪除"
+            android:enabled="true"
+            android:visibility="invisible"
+            android:textColor="#FFFFFFFF"
+            android:textSize="14sp" />
+
+        <TextView
+            android:layout_width="0dip"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center_vertical|center_horizontal"
+            android:text="數位資源分享"
+            android:textColor="#FFFFFFFF"
+            android:textSize="18sp" />
+
+        <Button
+            android:id="@+id/btnSort"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+          
+            android:text="排序"
+            android:enabled="false"
+            android:visibility="visible"
+            android:textColor="#FFFFFFFF"
+            android:textSize="14sp" >
+            <requestFocus />  
+            </Button>
+
+    </LinearLayout> -->
+
+  <!-- android:layout_below="@+id/header"     android:layout_alignParentBottom="true" -->
+    <FrameLayout
+        android:id="@+id/body"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+     
+      
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:flipInterval="20"
+        android:persistentDrawingCache="animation" >
+    </FrameLayout>
+   
+</RelativeLayout>

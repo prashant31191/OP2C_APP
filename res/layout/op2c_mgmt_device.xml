@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+            <EditText
+            android:layout_alignParentTop="true"
+            android:id="@+id/editText"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:background="@drawable/webdas_talkbar_key2"
+            android:drawableLeft="@drawable/webdas_search_icon"
+            android:drawablePadding="10dp"
+            android:ellipsize="end"
+            android:ems="10"
+            android:freezesText="true"
+            android:hint="搜尋"
+            android:imeOptions="actionSend"
+            android:paddingBottom="10dp"
+            android:paddingTop="10dp"
+            android:singleLine="true" >
+
+            <requestFocus />
+        </EditText>
+        
+            
+<!--     <LinearLayout
+        android:
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        
+        android:orientation="vertical" >
+
+
+
+        
+             <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" 
+                                        
+            >
+
+
+
+            <Spinner
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@+id/editText"
+                android:layout_alignParentRight="true"
+                android:background="@drawable/btn_sort"
+                android:id="@+id/spn_device_type"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </RelativeLayout>
+       
+    </LinearLayout> -->
+
+    <LinearLayout
+        android:layout_below="@+id/editText"
+        android:layout_alignParentBottom="true"
+        android:layout_width="fill_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical" >
+
+        <ExpandableListView
+            android:id="@+id/treeView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:background="#aaD2EDFF"
+            android:checkMark="?android:attr/listChoiceIndicatorMultiple"
+            android:choiceMode="multipleChoice"
+            android:dividerHeight="2dp"
+            android:groupIndicator="@null"
+            android:divider="@drawable/webdas_content_line"
+			android:showDividers="middle|beginning|end"
+            android:listSelector="@drawable/op2c_item_bg" >
+        </ExpandableListView>
+
+        <LinearLayout
+            android:id="@+id/listEmpty"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_marginTop="5dp"
+            android:layout_weight="1"
+            android:gravity="center_vertical|center_horizontal|center"
+            android:orientation="vertical"
+            android:visibility="gone" >
+
+            <ProgressBar
+                android:id="@+id/progEmpty"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/textEmpty"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:gravity="center"
+                android:text="@string/title_mgmt_no_resource"
+                android:textColor="#000000" />
+        </LinearLayout>
+    </LinearLayout>
+
+</RelativeLayout>

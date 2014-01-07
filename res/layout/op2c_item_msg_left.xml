@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    
+   
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content" >
+
+    <ImageView
+        android:layout_marginLeft="8dp"
+        android:id="@+id/imgPeople"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_alignParentTop="true"
+        android:src="@drawable/webdas_person01_picture_2x" />
+
+    <RelativeLayout
+        android:layout_alignBottom="@+id/imgPeople"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/imgPeople" >
+
+        <TextView
+            android:id="@+id/txtPeople"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:text="名字"
+            android:textSize="9dp" />
+
+        <TextView
+            android:id="@+id/txtMessage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/txtPeople"
+            android:layout_marginLeft="10dp"
+            android:textSize="11dp"
+            android:text="哈囉～" />
+    </RelativeLayout>
+
+    <TextView
+         android:layout_marginRight="8dp"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:id="@+id/txtTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+       	android:textSize="9dp"
+        android:text="11:11" />
+
+</RelativeLayout>

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="?android:attr/listPreferredItemHeight"
+    android:layout_marginLeft="12dp"
+    android:layout_marginRight="12dp"
+    
+    android:descendantFocusability="blocksDescendants" >
+
+    <RadioButton
+        android:id="@+id/rdoDevice"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="12dp"
+        android:visibility="invisible" />
+
+    <ImageView
+        android:id="@+id/imgDevice"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_toRightOf="@+id/rdoDevice"
+        android:src="@drawable/webdas_list01_picture"
+        android:visibility="invisible" />
+
+  <!--   android:background="@drawable/op2c_item_border" -->
+    <TextView
+        android:paddingLeft="10dp"
+        
+        android:id="@+id/txtChild"
+        android:layout_marginLeft="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="?android:attr/listPreferredItemHeight"
+        android:layout_centerVertical="true"
+        android:layout_toRightOf="@+id/imgDevice"
+        android:gravity="center_vertical"
+        android:text="abc"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textColor="#333333"
+        android:textSize="14dp"
+        android:textStyle="bold" />
+
+    <!--
+         <TextView
+        android:id="@+id/txtType"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        
+        android:text="攝影機"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+    -->
+
+
+    <!--
+         <Button
+        android:id="@+id/btnSetup"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="10dp"
+        android:layout_toLeftOf="@+id/btnInfo"
+        android:background="@drawable/img_tag"
+        android:text="" />
+
+    <Button
+        android:id="@+id/btnInfo"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:background="@drawable/img_exlm"
+        android:text="" />
+    -->
+
+</RelativeLayout>

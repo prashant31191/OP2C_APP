@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:layout_gravity="right" >
+
+    <Button
+        android:id="@+id/actionBack"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+      	android:background="@drawable/btn_sort"
+        style="?android:attr/buttonStyleSmall"
+        android:text="" />
+
+    <TextView
+        android:id="@+id/actionTitle"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_toRightOf="@+id/actionBack"
+        android:gravity="center"
+        android:text="我的清單" />
+</RelativeLayout>

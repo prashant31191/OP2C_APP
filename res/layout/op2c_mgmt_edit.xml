@@ -1,0 +1,335 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <RelativeLayout
+        android:id="@+id/lytAddFriend"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:background="#88b3ffff" >
+
+        <TextView
+            android:id="@+id/text1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_centerInParent="true"
+            android:layout_gravity="center_vertical"
+            android:layout_marginBottom="10dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="10dp"
+            android:text="分享給："
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="#111111"
+            android:textSize="11dp" />
+
+        <!--
+             <ImageButton
+            android:id="@+id/btnEdit"
+           
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginBottom="5dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="5dp"
+            android:background="@android:color/transparent"
+            android:src="@drawable/webdas_plus"
+            android:text="" />
+        -->
+
+
+        <!--
+             <TextView
+            android:id="@+id/txtMembers"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_toRightOf="@+id/text1"
+            android:maxLines="5"
+            android:text="無" />
+        -->
+
+        <org.itri.icl.x300.op2ca.ui.FriendListView
+            android:id="@+id/lytMembers"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="5dip"
+            android:layout_toRightOf="@+id/text1"
+            android:orientation="horizontal" />
+
+        <!--
+<org.itri.icl.x300.op2ca.ui.FriendListView$FriendItem android:layout_width="wrap_content"
+                 android:layout_alignParentTop="true"
+                 android:layout_height="wrap_content">
+/>
+             </org.itri.icl.x300.op2ca.ui.FriendListView$FriendItem>
+        -->
+        <!-- </org.itri.icl.x300.op2ca.ui.FriendListView> -->
+
+    </RelativeLayout>
+
+    <ImageView
+        android:id="@+id/divLine"
+        android:layout_width="fill_parent"
+        android:layout_height="3dp"
+        android:layout_below="@+id/lytAddFriend"
+        android:adjustViewBounds="true"
+        android:background="@drawable/webdas_line_640"
+        android:scaleType="fitCenter" />
+
+    <RelativeLayout
+        android:id="@+id/lytPicker"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/lytEditor"
+        android:layout_below="@+id/divLine"
+        android:layout_margin="5dp"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/txtView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginBottom="10dp"
+            android:layout_marginLeft="10dp"
+            android:text="分享些什麼？"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="#111111"
+            android:textSize="11dp" />
+
+        <FrameLayout
+            android:id="@+id/share_embedded"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_below="@+id/txtView" />
+
+        <!--
+        <RelativeLayout
+            android:id="@+id/lytPreview"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:background="#000000" >
+
+            <RelativeLayout
+                android:id="@+id/videoHeader"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:layout_alignParentTop="true"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp" >
+
+                <ImageView
+                    android:id="@+id/imageView2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="5dp"
+                    android:src="@drawable/webdas_ok_vedio" />
+
+                <TextView
+                    android:id="@+id/txtTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_toRightOf="@+id/imageView2"
+                    android:text="無主旨"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textColor="#ffffff" />
+            </RelativeLayout>
+
+            <SurfaceView
+                android:id="@+id/videoCapture"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_above="@+id/videoTools"
+                android:layout_below="@+id/videoHeader"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:visibility="visible" />
+
+            <RelativeLayout
+                android:id="@+id/videoTools"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:layout_alignParentBottom="true"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp" >
+
+                <ImageView
+                    android:id="@+id/imageView1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="5dp"
+                    android:src="@drawable/webdas_ok_time" />
+
+                <org.itri.icl.x300.op2ca.ui.TimerTextView
+                    android:id="@+id/txtDate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_toRightOf="@+id/imageView1"
+                    android:text="10/26, 04:25"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:textColor="#ffffff" />
+
+                <Button
+                    android:id="@+id/btnShare"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBaseline="@+id/txtDate"
+                    android:layout_marginRight="5dp"
+                    android:layout_toLeftOf="@+id/btnCancel"
+                    android:background="#00000000"
+                    android:text="開始分享"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textColor="#ff0000" />
+
+                <Button
+                    android:id="@+id/btnCancel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBaseline="@+id/txtDate"
+                    android:layout_alignParentRight="true"
+                    android:background="#00000000"
+                    android:text="取消"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textColor="#ffffff" />
+            </RelativeLayout>
+        </RelativeLayout>
+        -->
+    </RelativeLayout>
+    <!--
+    <ListView
+        android:id="@+id/listFriend"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/lytEditor"
+        android:layout_below="@+id/lytAddFriend" >
+
+    </ListView>
+
+    <LinearLayout
+        android:id="@+id/listEmpty"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_above="@+id/lytEditor"
+        android:layout_below="@+id/btnEdit"
+        android:layout_gravity="center"
+        android:layout_marginTop="5dp"
+        android:gravity="center_vertical|center_horizontal|center"
+        android:orientation="vertical"
+        android:visibility="gone" >
+
+        <ProgressBar
+            android:id="@+id/progEmpty"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/textEmpty"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:gravity="center"
+            android:text="尚未選擇分享對象"
+            android:textColor="#000000" />
+    </LinearLayout>
+    -->
+
+    <RelativeLayout
+        android:layout_height="48dip"
+        android:id="@+id/lytEditor"
+        android:layout_width="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:background="@drawable/webdas_talkbar"
+    >
+
+        <ToggleButton
+            android:id="@+id/btnEmoji"
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="32dp"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="5dp"
+            android:background="@drawable/btn_sort"
+            android:drawableLeft="@drawable/op2c_button_toggle_talk"
+            android:paddingBottom="6dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:paddingTop="6dp"
+            android:text=""
+            android:textOff=""
+            android:textOn="" />
+
+        <Button
+            android:id="@+id/btnResource"
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="32dp"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="3dp"
+            android:layout_toRightOf="@+id/btnEmoji"
+            android:background="@drawable/btn_sort"
+            android:drawableLeft="@drawable/webdas_talkbar_device"
+            android:paddingBottom="6dp"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:paddingTop="6dp"
+            android:text="" />
+
+        <EditText
+            android:id="@+id/editMsg"
+            android:textSize="12dp"
+            android:layout_width="fill_parent"
+            android:layout_height="32dp"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="3dp"
+            android:layout_toLeftOf="@+id/btnSubmit"
+            android:layout_toRightOf="@+id/btnResource"
+            android:background="@drawable/webdas_talkbar_key2"
+            android:hint="請輸入分享的主旨"
+            android:imeOptions="actionDone"
+            android:inputType="text"
+            android:maxLines="1"
+            android:singleLine="true" >
+
+            <requestFocus />
+        </EditText>
+
+        <Button
+            android:id="@+id/btnSubmit"
+            android:layout_width="wrap_content"
+            android:layout_height="32dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="3dp"
+            android:layout_marginRight="5dp"
+            android:background="@drawable/btn_sort"
+            android:paddingBottom="6dp"
+            android:paddingLeft="6dp"
+            android:paddingRight="6dp"
+            android:paddingTop="6dp"
+            android:text="清除"
+            android:textColor="#ffffff"
+            android:textSize="11dp" />
+    </RelativeLayout>
+
+</RelativeLayout>

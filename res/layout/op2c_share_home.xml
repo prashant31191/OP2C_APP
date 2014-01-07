@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:layout_marginBottom="65dp"
+    android:layout_marginLeft="5dp"
+    android:layout_marginRight="5dp"
+    android:layout_marginTop="5dp"
+    android:background="@drawable/op2c_list_background" >
+
+    <TableLayout
+        android:orientation="vertical" 
+        android:id="@+id/lytCtl"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:divider="@drawable/webdas_content_line"
+        
+        android:showDividers="middle|end"
+         >
+
+        <TableRow
+            android:id="@+id/tableRow1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:divider="@drawable/webdas_content_vline"
+            android:showDividers="middle" >
+
+            <LinearLayout
+                android:id="@+id/btnText"
+                android:layout_width="0dp"
+                android:layout_height="fill_parent"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:background="@drawable/op2c_btn_shared"
+                android:gravity="center" >
+
+                <!-- android:background="@drawable/btn_shared_part1" -->
+
+                <ImageView
+                    android:layout_width="0dp"
+                    android:layout_height="fill_parent"
+                    android:layout_weight="2"
+                    android:adjustViewBounds="true"
+                    android:maxHeight="80dp"
+                    android:maxWidth="80dp"
+                    android:src="@drawable/webdas_shared_button_chatroom_2x" />
+
+                <!-- android:background="@drawable/btn_shared_part2" -->
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="fill_parent"
+                    android:gravity="center"
+                    android:layout_weight="1"
+                    android:text="文字\n訊息"
+                    android:textSize="11dp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <!--
+                 android:background="@drawable/op2c_btn_shared"
+                 <TextView
+                               	android:paddingBottom="10dp"
+                android:paddingTop="10dp"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:layout_weight="0.25"
+                android:text=""  android:background="@drawable/op2c_btn_shared"
+                android:textSize="11dp" />
+            -->
+
+            <LinearLayout
+                android:id="@+id/btnFile"
+                android:layout_width="0dp"
+                android:layout_height="fill_parent"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:background="@drawable/op2c_btn_shared"
+                android:gravity="center" >
+
+                <ImageView
+                    android:layout_width="0dp"
+                    android:layout_height="fill_parent"
+                    android:layout_weight="2"
+                    android:adjustViewBounds="true"
+                    android:maxHeight="80dp"
+                    android:maxWidth="80dp"
+                    android:src="@drawable/webdas_shared_button_document_2x" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="fill_parent"
+                    android:gravity="center"
+                    android:layout_weight="1"
+                    android:text="檔案\n資源"
+                    android:textSize="11dp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/btnAudio"
+                android:layout_width="0dp"
+                android:layout_height="fill_parent"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:background="@drawable/op2c_btn_shared"
+                android:gravity="center" >
+
+                <ImageView
+                    android:layout_width="0dp"
+                    android:layout_height="fill_parent"
+                    android:layout_weight="2"
+                    android:adjustViewBounds="true"
+                    android:maxHeight="80dp"
+                    android:maxWidth="80dp"
+                    android:src="@drawable/webdas_shared_button_conference_2x" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="fill_parent"
+                    android:gravity="center"
+                    android:layout_weight="1"
+                    android:text="視訊\n會議"
+                    android:textSize="11dp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/tableRow2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:divider="@drawable/webdas_content_vline"
+            android:showDividers="middle" >
+
+            <LinearLayout
+                android:id="@+id/btnVideo"
+                android:layout_width="0dp"
+                android:layout_height="fill_parent"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:background="@drawable/op2c_btn_shared"
+                android:gravity="center" >
+
+                <ImageView
+                    android:layout_width="0dp"
+                    android:layout_height="fill_parent"
+                    android:layout_weight="2"
+                    android:adjustViewBounds="true"
+                    android:maxHeight="80dp"
+                    android:maxWidth="80dp"
+                    android:src="@drawable/webdas_shared_button_video_2x" />
+
+                <TextView
+                                    android:layout_width="0dp"
+                    android:layout_height="fill_parent"
+                    android:gravity="center"
+                    android:layout_weight="1"
+                    android:text="視訊\n串流"
+                    android:textSize="11dp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/btnMgmt"
+                android:layout_width="0dp"
+                android:layout_height="fill_parent"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:background="@drawable/op2c_btn_shared"
+                android:gravity="center" >
+
+                <ImageView
+                    android:layout_width="0dp"
+                    android:layout_height="fill_parent"
+                    android:layout_weight="2"
+                    android:adjustViewBounds="true"
+                    android:maxHeight="80dp"
+                    android:maxWidth="80dp"
+                    android:src="@drawable/webdas_shared_button_resource_2x" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="fill_parent"
+                    android:gravity="center"
+                    android:layout_weight="1"
+                    android:text="數位\n資源"
+                    android:textSize="11dp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/btnShare"
+                android:layout_width="0dp"
+                android:layout_height="fill_parent"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:background="@drawable/op2c_btn_shared"
+                android:gravity="center" >
+
+                <ImageView
+                    android:layout_width="0dp"
+                    android:layout_height="fill_parent"
+                    android:layout_weight="2"
+                    android:adjustViewBounds="true"
+                    android:maxHeight="80dp"
+                    android:maxWidth="80dp"
+                    android:src="@drawable/webdas_shared_button_intercom_2x" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="fill_parent"
+                    android:gravity="center"
+                    android:layout_weight="1"
+                    android:text="通訊\n整合"
+                    android:textSize="11dp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+        </TableRow>
+    </TableLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_alignParentBottom="true"
+        android:layout_below="@+id/lytCtl"
+        android:orientation="vertical" >
+
+        <ListView
+            android:id="@+id/listView"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_marginTop="5dp"
+            android:cacheColorHint="#00000000"
+            android:divider="@drawable/webdas_content_line"
+            android:soundEffectsEnabled="true" >
+        </ListView>
+
+        <LinearLayout
+            android:id="@+id/listEmpty"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_gravity="center"
+            android:layout_marginTop="5dp"
+            android:gravity="center_vertical|center_horizontal|center"
+            android:orientation="vertical"
+            android:visibility="gone" >
+
+            <ProgressBar
+                android:id="@+id/progEmpty"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/textEmpty"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:gravity="center"
+                android:text="尚無分享資源"
+                android:textColor="#000000" />
+        </LinearLayout>
+    </LinearLayout>
+
+</RelativeLayout>
