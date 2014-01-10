@@ -70,13 +70,12 @@
                 android:id="@+id/treeView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="10dp"
                 android:background="#aaD2EDFF"
                 android:checkMark="?android:attr/listChoiceIndicatorMultiple"
                 android:choiceMode="multipleChoice"
                 android:groupIndicator="@null"
                 android:divider="@drawable/webdas_line_640"
-                android:dividerHeight="2dp"
+                android:dividerHeight="3dp"
                 android:childDivider="@drawable/webdas_line_640"
                 android:listSelector="@drawable/op2c_item_bg" >
             </ListView>

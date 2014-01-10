@@ -902,8 +902,10 @@ public class LinphoneManager implements LinphoneCoreListener {
     
 	CloudPlay mCloudPlay;
 	public void textReceived(LinphoneCore lc, LinphoneChatRoom cr, LinphoneAddress from, String message) {
+		if (lc.getCurrentCall() != null) {
 		android.util.Log.wtf("chatroom", "call id = " + lc.getCurrentCall().getCallLog().getCallId());
-		
+		} 
+		android.util.Log.wtf("chatroom", "from = " + from.getUserName() + " " + message);
 		//FIXME
 		ObjectMapper om = new ObjectProvider().getContext(this.getClass());
 		try {

@@ -20,7 +20,7 @@ public class DateUtils {
 		long lstDayOfWeek = cale.getTimeInMillis();
 		cale.set(Calendar.MONTH, 0);
 		cale.set(Calendar.DAY_OF_MONTH, 0);
-		cale.set(Calendar.HOUR, 0);
+		cale.set(Calendar.HOUR_OF_DAY, 0);
 		cale.set(Calendar.MINUTE, 0);
 		cale.set(Calendar.SECOND, 0);
 		cale.set(Calendar.MILLISECOND, 0);

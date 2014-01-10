@@ -1,17 +1,24 @@
 package org.itri.icl.x300.op2ca.webdas.mgnt;
 
+import java.util.List;
+
 import lombok.SneakyThrows;
 
 import org.itri.icl.x300.op2ca.R;
 import org.itri.icl.x300.op2ca.adapter.ShareAdapter;
+import org.itri.icl.x300.op2ca.data.Message;
 import org.itri.icl.x300.op2ca.db.OpDB;
 import org.itri.icl.x300.op2ca.utils.OrmLiteRoboFragment;
 import org.itri.icl.x300.op2ca.webdas.Main;
 import org.itri.icl.x300.op2ca.webdas.share.ShareEdit;
 
+import data.Resources.Resource;
+
 import roboguice.inject.InjectView;
 
 import android.os.Bundle;
+import android.support.v4.app.LoaderManager.LoaderCallbacks;
+import android.support.v4.content.Loader;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -74,4 +81,5 @@ public class MgmtHome extends OrmLiteRoboFragment<OpDB> implements OnClickListen
 		}
 		
 	}
+
 }

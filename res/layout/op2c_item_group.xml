@@ -1,29 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="match_parent"
+    android:layout_height="60dp"
     android:layout_gravity="center"
     android:descendantFocusability="blocksDescendants"
     android:divider="@drawable/webdas_content_vline"
     android:orientation="horizontal"
+    android:gravity="center"
+    android:layout_marginRight="8dp"
     android:showDividers="middle" >
 
-    <RadioButton
-        android:id="@+id/rdoDevice"
-        android:layout_width="wrap_content"
+    <LinearLayout  android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical|center_horizontal"
-        android:layout_marginBottom="10dp"
-        android:layout_marginTop="10dp"
-        android:button="@drawable/op2c_radiobutton"
-        android:gravity="center" />
+        android:layout_weight="1"
+        android:gravity="center">
+
+         <RadioButton
+             android:id="@+id/rdoDevice"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:layout_gravity="center"
+             android:adjustViewBounds="false"
+             android:button="@drawable/op2c_radiobutton"
+             android:gravity="center"
+             android:scaleType="center" />
+        
+    </LinearLayout>
+   
 
     <ImageView
         android:id="@+id/imgDevice"
+        android:layout_weight="1"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_weight="1"
         android:adjustViewBounds="false"
         android:scaleType="center"
         android:src="@drawable/webdas_list01_picture" />
@@ -34,8 +44,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_marginLeft="10dp"
-        android:paddingLeft="10dp"
+        android:layout_margin="5dp"
         android:text="我的HTC手機"
         android:textColor="#333333"
         android:textSize="14dp"

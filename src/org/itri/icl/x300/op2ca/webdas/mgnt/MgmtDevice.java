@@ -1,15 +1,28 @@
 package org.itri.icl.x300.op2ca.webdas.mgnt;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.inject.Inject;
+
 import lombok.SneakyThrows;
 
 import org.itri.icl.x300.op2ca.R;
 import org.itri.icl.x300.op2ca.adapter.FunctionAdapter;
 import org.itri.icl.x300.op2ca.db.OpDB;
+import org.itri.icl.x300.op2ca.utils.CloudPlay;
 import org.itri.icl.x300.op2ca.utils.OrmLiteRoboFragment;
+import org.itri.icl.x300.op2ca.utils.WebAsyncTaskLoader;
 import org.itri.icl.x300.op2ca.webdas.Main;
+
+import com.google.common.base.Optional;
+
+import data.Resources.Resource;
 
 import roboguice.inject.InjectView;
 import android.os.Bundle;
+import android.support.v4.app.LoaderManager.LoaderCallbacks;
+import android.support.v4.content.Loader;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -27,7 +40,7 @@ import android.widget.ToggleButton;
 import android.widget.ExpandableListView.OnChildClickListener;
 import android.widget.ExpandableListView.OnGroupExpandListener;
 
-public class MgmtDevice extends OrmLiteRoboFragment<OpDB> implements OnGroupExpandListener, OnChildClickListener, OnClickListener, TextWatcher {
+public class MgmtDevice extends OrmLiteRoboFragment<OpDB> implements OnGroupExpandListener, OnChildClickListener, OnClickListener, TextWatcher, LoaderCallbacks<List<Resource>> {
 
 	@InjectView(R.id.editText) EditText mEditText;
 	@InjectView(R.id.treeView) ExpandableListView mTreeView;
@@ -40,6 +53,7 @@ public class MgmtDevice extends OrmLiteRoboFragment<OpDB> implements OnGroupExpa
 	TextView mTextTitle;
 	TabWidget mTabWidget;
 	ImageButton mBtnStop, mBtnBack, mBtnSort;
+	@Inject CloudPlay mCloudPlay;
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup c, Bundle state) {
 		mBtnDelt = (ToggleButton)((Main)getActivity()).getButtonToggle();
@@ -71,6 +85,7 @@ public class MgmtDevice extends OrmLiteRoboFragment<OpDB> implements OnGroupExpa
 		mTreeView.setTextFilterEnabled(true);
 //		mBtnReset.setOnClickListener(this);
 //		mBtnConfirm.setOnClickListener(this);
+		getLoaderManager().initLoader(0, null, this);
 	}
 
 	@Override
@@ -80,8 +95,9 @@ public class MgmtDevice extends OrmLiteRoboFragment<OpDB> implements OnGroupExpa
 
 	@Override
 	public void onGroupExpand(int groupPosition) {
-		// TODO Auto-generated method stub
-		
+		if(groupPosition != previousGroup)
+			mTreeView.collapseGroup(previousGroup);
+        previousGroup = groupPosition;		
 	}
 
 	@Override
@@ -90,17 +106,38 @@ public class MgmtDevice extends OrmLiteRoboFragment<OpDB> implements OnGroupExpa
 	}
 
 	@Override
-	public void afterTextChanged(Editable s) {
-		// TODO Auto-generated method stub
+	public void afterTextChanged(Editable s) {}
+	@Override
+	public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+	@Override
+	public void onTextChanged(CharSequence s, int start, int before, int count) {}
+	@Override
+	public Loader<List<Resource>> onCreateLoader(int arg0, Bundle arg1) {
+//		if (arg0 == 0) {
+			return new WebAsyncTaskLoader<List<Resource>>(getActivity()) {
+				public List<Resource> loadInBackground() {
+					Optional<List<Resource>> opt = mCloudPlay.listResources();
+					return opt.isPresent() ? opt.get() : new ArrayList<Resource>();
+				}
+			};
+//		} else {
+//			
+//		}
+
 	}
 
 	@Override
-	public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-		// TODO Auto-generated method stub
+	public void onLoadFinished(Loader<List<Resource>> loader, List<Resource> result) {
+		//getHelper().syncResource(result);
 	}
 
 	@Override
-	public void onTextChanged(CharSequence s, int start, int before, int count) {
-		// TODO Auto-generated method stub
+	public void onLoaderReset(Loader<List<Resource>> loader) {
+		
 	}
+	
+//	@Subscribe
+//	public void onMainEvent() {
+//		
+//	}
 }

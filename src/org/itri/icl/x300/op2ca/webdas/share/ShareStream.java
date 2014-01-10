@@ -133,9 +133,6 @@ public class ShareStream extends OrmLiteRoboFragment<OpDB> implements LoaderCall
 		if (mResource != null)
 		getLoaderManager().initLoader(0, null, this);
 	}
-	
-	
-	
 	@Override
 	public void onClick(View v) {
 		if(v == mBtnBack) {
@@ -143,7 +140,6 @@ public class ShareStream extends OrmLiteRoboFragment<OpDB> implements LoaderCall
 		}
 		
 	}
-
 	@Override @SneakyThrows
 	public Loader<List<Message>> onCreateLoader(int arg0, Bundle arg1) {
 		QueryBuilder<Message, Long> qb = getHelper().msgDao().queryBuilder();
@@ -152,21 +148,16 @@ public class ShareStream extends OrmLiteRoboFragment<OpDB> implements LoaderCall
 		PreparedQuery<Message> preparedQuery = qb.prepare();
 		return new OrmliteListLoader<Message, Long>(getActivity(), getHelper().msgDao(), preparedQuery);
 	}
-
 	@Override
 	public void onLoadFinished(Loader<List<Message>> arg0, List<Message> res) {
 		mAdapter.clear();
 		mAdapter.addAll(res);
 	}
-
 	@Override
 	public void onLoaderReset(Loader<List<Message>> arg0) {
 		mAdapter.clear();
 	}
 	@Override
 	public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-		// TODO Auto-generated method stub
-		
 	}
-
 }

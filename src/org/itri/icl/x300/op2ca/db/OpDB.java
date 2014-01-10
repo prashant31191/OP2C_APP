@@ -37,12 +37,16 @@ import com.j256.ormlite.stmt.UpdateBuilder;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
 
+import data.Contacts.Contact;
+import data.Resources;
+
 @Log
 public class OpDB extends OrmLiteSqliteOpenHelper {
 
 	private static final String DATABASE_NAME = "opdb.db";
-	private static final int DATABASE_VERSION = 1;
+	private static final int DATABASE_VERSION = 2;
 	private Dao<Resource, Long> resDao;
+	private Dao<Contact, String> ctctDao;
 	private Dao<Device, Long> devDao;
 	private Dao<Function, Long> funDao;
 	private Dao<People, Long> manDao;
@@ -65,6 +69,7 @@ public class OpDB extends OrmLiteSqliteOpenHelper {
 			TableUtils.createTable(conn, Phone.class);
 			TableUtils.createTable(conn, Group.class);
 			TableUtils.createTable(conn, Message.class);
+			TableUtils.createTable(conn, Contact.class);
 			init();
 		} catch (SQLException e) {log.severe("Can't create database");
 			e.printStackTrace();
@@ -82,6 +87,7 @@ public class OpDB extends OrmLiteSqliteOpenHelper {
 			TableUtils.dropTable(conn, Phone.class, true);
 			TableUtils.dropTable(conn, Group.class, true);
 			TableUtils.dropTable(conn, Message.class, true);
+			TableUtils.dropTable(conn, Contact.class, true);
 			onCreate(db, conn);
 		} catch (SQLException e) {
 			log.severe(OpDB.class.getName() + " Can't drop databases");
@@ -212,6 +218,13 @@ public class OpDB extends OrmLiteSqliteOpenHelper {
 		return manDao;
 	}
 	
+	public Dao<Contact, String> ctctDao() throws SQLException {
+		if (ctctDao == null) {
+			ctctDao = getDao(Contact.class);
+		}
+		return ctctDao;
+	}
+	
 	public Dao<Phone, Long> numDao() throws SQLException {
 		if (numDao == null) {
 			numDao = getDao(Phone.class);
@@ -245,10 +258,38 @@ public class OpDB extends OrmLiteSqliteOpenHelper {
 //	}
 	
 	@SneakyThrows
+	public List<Contact> contacts() {
+		return ctctDao().queryForAll();
+	}
+	
+	@SneakyThrows
 	public List<Phone> phone() {
 		return numDao().queryForAll();
 	}
 	
+	@SneakyThrows
+	public void syncResource(List<Resource> resources) {
+		resDao().callBatchTasks(new Callable<Void>() {
+			@Override
+			public Void call() throws Exception {
+				return null;
+			}
+		});
+	}
+	
+	
+	@SneakyThrows
+	public void syncContacts(Collection<Contact> contacts) {
+		final long syncTime = System.currentTimeMillis();
+		for(Contact contact : contacts) {
+			contact.setSyncTime(syncTime);
+			CreateOrUpdateStatus status = ctctDao().createOrUpdate(contact);
+			log.warning(status.isCreated() + " " + status.isUpdated());
+		}
+		DeleteBuilder<Contact, String> db = ctctDao().deleteBuilder();
+		db.where().ne("syncTime", syncTime);
+		ctctDao().delete(db.prepare());
+	}
 	/**
 	 * 更新完成後 將舊的資料欄位刪除(以timestamp來判斷)
 	 * @param people

@@ -93,7 +93,7 @@ public class Main extends OrmLiteRoboFragmentActivity<OpDB> implements OnClickLi
 		mTabManager.add("訊息", R.drawable.tab_03, Setup.class, bundle2);
 		Bundle bundle3 = new Bundle();
 		bundle3.putBoolean("mgmt", true);
-		mTabManager.add("設定", R.drawable.tab_04, SettingsFragment.class, bundle3); //Dispatch
+		mTabManager.add("設定", R.drawable.tab_04, Dispatch.class, bundle3); //Dispatch SettingsFragment
 		Bundle bundle4 = new Bundle();
 		bundle4.putBoolean("other", true);
 		mTabManager.add("其他", R.drawable.tab_05, AccountPreferencesFragment.class, bundle4);

@@ -13,6 +13,7 @@ import org.itri.icl.x300.op2ca.adapter.FriendAdapter;
 import org.itri.icl.x300.op2ca.adapter.ShareAdapter;
 import org.itri.icl.x300.op2ca.data.Device;
 import org.itri.icl.x300.op2ca.data.Phone;
+import org.itri.icl.x300.op2ca.data.ext.ContactArg;
 import org.itri.icl.x300.op2ca.db.OpDB;
 import org.itri.icl.x300.op2ca.utils.OrmLiteRoboFragment;
 import org.itri.icl.x300.op2ca.webdas.Main;
@@ -65,7 +66,7 @@ public class ShareFriend extends OrmLiteRoboFragment<OpDB> implements LoaderCall
 	
 	public ShareFriend(Bundle... bundle) {
 		if (bundle != null && !bundle[0].containsKey("people")) {
-			bundle[0].putParcelableArrayList("people", new ArrayList<Phone>());
+			bundle[0].putParcelableArrayList("people", new ArrayList<ContactArg>());
 		}
 		setArguments(bundle[0]);
 	}
@@ -95,7 +96,7 @@ public class ShareFriend extends OrmLiteRoboFragment<OpDB> implements LoaderCall
 		mListView.setEmptyView(mListEmpty);
 		mListView.setItemsCanFocus(false);
 		mListView.setOnItemClickListener(this);
-		mAdapter = new FriendAdapter(getHelper(), getArguments().<Phone>getParcelableArrayList("people"));
+		mAdapter = new FriendAdapter(getHelper(), getArguments().<ContactArg>getParcelableArrayList("people"));
 		mListView.setAdapter(mAdapter);
 		mBtnReset.setOnClickListener(this);
 		mBtnConfirm.setOnClickListener(this);

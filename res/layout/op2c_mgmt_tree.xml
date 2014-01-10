@@ -51,26 +51,10 @@
             android:layout_height="match_parent"
             android:orientation="vertical" >
 
-            <!--
-                 <ListView
-                android:id="@+id/listView"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_margin="10dp"
-                android:background="#aaD2EDFF"
-                android:listSelector="@drawable/op2c_item_bg" 
-             	android:checkMark="?android:attr/listChoiceIndicatorMultiple"
-                android:choiceMode="multipleChoice" >
-                
-                
-            </ListView>
-            -->
-
             <ExpandableListView
                 android:id="@+id/treeView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="10dp"
                 android:background="#aaD2EDFF"
                 android:checkMark="?android:attr/listChoiceIndicatorMultiple"
                 android:choiceMode="multipleChoice"
