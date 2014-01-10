@@ -8,6 +8,7 @@ import static android.provider.ContactsContract.Contacts.openContactPhotoInputSt
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -15,11 +16,11 @@ import lombok.extern.java.Log;
 
 import org.itri.icl.x300.op2ca.App;
 import org.itri.icl.x300.op2ca.R;
-import org.itri.icl.x300.op2ca.data.People;
-import org.itri.icl.x300.op2ca.data.Phone;
 import org.itri.icl.x300.op2ca.data.ext.ContactArg;
 import org.itri.icl.x300.op2ca.db.OpDB;
 
+import com.google.common.base.Function;
+import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
@@ -38,12 +39,18 @@ import android.widget.TextView;
 @Log
 public class FriendAdapter extends ArrayAdapter<Contact> {
 	OpDB mOpDB;
-	private Set<ContactArg> mChecked = Sets.newHashSet();
-	private Set<ContactArg> mOrginal = Sets.newHashSet();
+	private Set<Contact> mChecked = Sets.newHashSet();
+	private Set<Contact> mOrginal = Sets.newHashSet();
 	public FriendAdapter(OpDB opDB, ArrayList<ContactArg> checked) {
 		super(App.getCtx(), R.layout.op2c_item_contact, R.id.text1, opDB.contacts());
-		mChecked.addAll(checked);
-		mOrginal.addAll(checked);
+		Collection<Contact> transed = Collections2.transform(checked, new Function<ContactArg, Contact>() {
+			@Override
+			public Contact apply(ContactArg arg0) {
+				return new Contact(arg0.getUserID(), arg0.getDisplayName(), arg0.getLookuoKey());
+			}
+		});
+		mChecked.addAll(transed);
+		mOrginal.addAll(transed);
 	}
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
@@ -56,8 +63,8 @@ public class FriendAdapter extends ArrayAdapter<Contact> {
 		group.setChecked(mChecked.contains(phone) ? true : false);
 		number.setText(phone.getUserID() + "@domain.org");
 //		People people = phone.getPeople();
-//		String contactId = people.getLookupKey();
-		Uri contactUri = withAppendedPath(CONTENT_LOOKUP_URI, "aa");
+		String contactId = phone.getLookupKey();
+		Uri contactUri = withAppendedPath(CONTENT_LOOKUP_URI, contactId);
 		InputStream photoIs = openContactPhotoInputStream(App.getCtx().getContentResolver(), contactUri);
 		photoView.setImageBitmap(photoIs != null ? decodeStream(photoIs) : decodeResource(App.getCtx().getResources(), R.drawable.webdas_person01_picture_2x));
 		item.setText(phone.getDisplayName());
@@ -65,11 +72,12 @@ public class FriendAdapter extends ArrayAdapter<Contact> {
 		return view;
 	}
 	public void write(Contact phone) {
-		ContactArg contactArg = new ContactArg(phone.getUserID(), phone.getDisplayName());
 		if (mChecked.contains(phone)) {
+			log.warning("contact 清除 " + phone.getDisplayName());
 			mChecked.remove(phone);
 		} else {
-			mChecked.add(contactArg);
+			log.warning("contact 加入 " + phone.getDisplayName());
+			mChecked.add(phone);
 		}
 	}
 	public void clearChecked() {
@@ -77,12 +85,12 @@ public class FriendAdapter extends ArrayAdapter<Contact> {
 		notifyDataSetChanged();
 	}
 	
-	public ArrayList<Contact> readChecked() {
-		ArrayList<Contact> checked = Lists.newArrayList();
+	public ArrayList<ContactArg> readChecked() {
+		ArrayList<ContactArg> checked = Lists.newArrayList();
 		for(int i = 0; i < getCount(); i++) {
 			Contact phone = getItem(i);
 			if (mChecked.contains(phone)) {
-				checked.add(phone);
+				checked.add(new ContactArg(phone.getUserID(), phone.getDisplayName(), phone.getLookupKey()));
 			}
 		}
 		return checked;

@@ -5,8 +5,6 @@ import java.util.Set;
 
 import lombok.extern.java.Log;
 
-import org.itri.icl.x300.op2ca.data.People;
-import org.itri.icl.x300.op2ca.data.Phone;
 import org.itri.icl.x300.op2ca.db.OpDB;
 import org.itri.icl.x300.op2ca.utils.OrmLiteRoboIntentService;
 
@@ -40,10 +38,10 @@ public class SyncPeople extends OrmLiteRoboIntentService<OpDB> {
 //		Map<String, People> hm = Maps.newHashMap();
 		Set<Contact> ctcts = Sets.newHashSet();
 		for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
-//			String lookupKey = cursor.getString(lookupIndex);
+			String lookupKey = cursor.getString(lookupIndex);
 			String displayName = cursor.getString(displayNameIndex);
 			String number = cursor.getString(numberIndex);
-			ctcts.add(new Contact(number, displayName));
+			ctcts.add(new Contact(number, displayName, lookupKey));
 //			if(hm.containsKey(cursor.getString(lookupIndex))) {
 //				People people = hm.get(lookupKey);
 //				people.add(Phone.of(cursor.getString(numberIndex)));

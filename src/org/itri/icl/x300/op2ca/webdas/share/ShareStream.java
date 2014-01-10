@@ -10,31 +10,23 @@ import lombok.extern.java.Log;
 
 import org.itri.icl.x300.op2ca.R;
 import org.itri.icl.x300.op2ca.adapter.MessageAdapter;
-import org.itri.icl.x300.op2ca.adapter.ShareAdapter;
 import org.itri.icl.x300.op2ca.data.Device;
-import org.itri.icl.x300.op2ca.data.Function;
 import org.itri.icl.x300.op2ca.data.Message;
-import org.itri.icl.x300.op2ca.data.Phone;
 import org.itri.icl.x300.op2ca.data.Resource;
+import org.itri.icl.x300.op2ca.data.ext.ContactArg;
 import org.itri.icl.x300.op2ca.db.OpDB;
-import org.itri.icl.x300.op2ca.ui.FriendListView;
 import org.itri.icl.x300.op2ca.utils.OrmLiteRoboFragment;
 import org.itri.icl.x300.op2ca.webdas.Main;
 
-import com.j256.ormlite.android.extras.OrmliteListLoader;
-import com.j256.ormlite.stmt.PreparedQuery;
-import com.j256.ormlite.stmt.QueryBuilder;
-
 import roboguice.inject.InjectView;
-
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.Loader;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -46,6 +38,10 @@ import android.widget.ListView;
 import android.widget.TabWidget;
 import android.widget.TextView;
 import android.widget.ToggleButton;
+
+import com.j256.ormlite.android.extras.OrmliteListLoader;
+import com.j256.ormlite.stmt.PreparedQuery;
+import com.j256.ormlite.stmt.QueryBuilder;
 
 @Log
 public class ShareStream extends OrmLiteRoboFragment<OpDB> implements LoaderCallbacks<List<Message>>, OnClickListener, OnItemClickListener {
@@ -121,7 +117,7 @@ public class ShareStream extends OrmLiteRoboFragment<OpDB> implements LoaderCall
 //		}
 //		if (getArguments() != null && !getArguments().getParcelableArrayList("device").isEmpty()) {
 //			log.warning("create share Video");
-			mShareVideo =  new EmbeddedVideo(new ArrayList<Device>(), new ArrayList<Phone>()); //目前只有Video 先這樣寫
+			mShareVideo =  new EmbeddedVideo(new ArrayList<Device>(), new ArrayList<ContactArg>()); //目前只有Video 先這樣寫
 			mMgr.beginTransaction().add(R.id.share_embedded, mShareVideo, "share").commit();
 //		}
 		

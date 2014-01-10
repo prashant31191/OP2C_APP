@@ -11,10 +11,7 @@ import lombok.extern.java.Log;
 
 import org.itri.icl.x300.op2ca.data.Device;
 import org.itri.icl.x300.op2ca.data.Function;
-import org.itri.icl.x300.op2ca.data.Group;
 import org.itri.icl.x300.op2ca.data.Message;
-import org.itri.icl.x300.op2ca.data.People;
-import org.itri.icl.x300.op2ca.data.Phone;
 import org.itri.icl.x300.op2ca.data.Resource;
 import org.itri.icl.x300.op2ca.data.TYPE;
 import org.itri.icl.x300.op2ca.data.TYPE.FUNC_TYPE;
@@ -44,13 +41,11 @@ import data.Resources;
 public class OpDB extends OrmLiteSqliteOpenHelper {
 
 	private static final String DATABASE_NAME = "opdb.db";
-	private static final int DATABASE_VERSION = 2;
+	private static final int DATABASE_VERSION = 4;
 	private Dao<Resource, Long> resDao;
 	private Dao<Contact, String> ctctDao;
 	private Dao<Device, Long> devDao;
 	private Dao<Function, Long> funDao;
-	private Dao<People, Long> manDao;
-	private Dao<Phone, Long> numDao;
 	private DeviceDao mDeviceDao;
 	private FunctionDao mFunctionDao;
 	private Dao<Message, Long> msgDao;
@@ -65,9 +60,9 @@ public class OpDB extends OrmLiteSqliteOpenHelper {
 			TableUtils.createTable(conn, Resource.class);
 			TableUtils.createTable(conn, Device.class);
 			TableUtils.createTable(conn, Function.class);
-			TableUtils.createTable(conn, People.class);
-			TableUtils.createTable(conn, Phone.class);
-			TableUtils.createTable(conn, Group.class);
+//			TableUtils.createTable(conn, People.class);
+//			TableUtils.createTable(conn, Phone.class);
+//			TableUtils.createTable(conn, Group.class);
 			TableUtils.createTable(conn, Message.class);
 			TableUtils.createTable(conn, Contact.class);
 			init();
@@ -83,9 +78,9 @@ public class OpDB extends OrmLiteSqliteOpenHelper {
 			TableUtils.dropTable(conn, Resource.class, true);
 			TableUtils.dropTable(conn, Device.class, true);
 			TableUtils.dropTable(conn, Function.class, true);
-			TableUtils.dropTable(conn, People.class, true);
-			TableUtils.dropTable(conn, Phone.class, true);
-			TableUtils.dropTable(conn, Group.class, true);
+//			TableUtils.dropTable(conn, People.class, true);
+//			TableUtils.dropTable(conn, Phone.class, true);
+//			TableUtils.dropTable(conn, Group.class, true);
 			TableUtils.dropTable(conn, Message.class, true);
 			TableUtils.dropTable(conn, Contact.class, true);
 			onCreate(db, conn);
@@ -211,12 +206,12 @@ public class OpDB extends OrmLiteSqliteOpenHelper {
 		return devDao;
 	}
 	
-	public Dao<People, Long> manDao() throws SQLException {
-		if (manDao == null) {
-			manDao = getDao(People.class);
-		}
-		return manDao;
-	}
+//	public Dao<People, Long> manDao() throws SQLException {
+//		if (manDao == null) {
+//			manDao = getDao(People.class);
+//		}
+//		return manDao;
+//	}
 	
 	public Dao<Contact, String> ctctDao() throws SQLException {
 		if (ctctDao == null) {
@@ -225,13 +220,13 @@ public class OpDB extends OrmLiteSqliteOpenHelper {
 		return ctctDao;
 	}
 	
-	public Dao<Phone, Long> numDao() throws SQLException {
-		if (numDao == null) {
-			numDao = getDao(Phone.class);
-		}
-		return numDao;
-	}
-	
+//	public Dao<Phone, Long> numDao() throws SQLException {
+//		if (numDao == null) {
+//			numDao = getDao(Phone.class);
+//		}
+//		return numDao;
+//	}
+//	
 	
 //	@SneakyThrows
 //	public Function getFunction() {
@@ -262,10 +257,10 @@ public class OpDB extends OrmLiteSqliteOpenHelper {
 		return ctctDao().queryForAll();
 	}
 	
-	@SneakyThrows
-	public List<Phone> phone() {
-		return numDao().queryForAll();
-	}
+//	@SneakyThrows
+//	public List<Phone> phone() {
+//		return numDao().queryForAll();
+//	}
 	
 	@SneakyThrows
 	public void syncResource(List<Resource> resources) {
@@ -294,31 +289,31 @@ public class OpDB extends OrmLiteSqliteOpenHelper {
 	 * 更新完成後 將舊的資料欄位刪除(以timestamp來判斷)
 	 * @param people
 	 */
-	@SneakyThrows
-	public void sync(Collection<People> list) {
-		final long syncTime = System.currentTimeMillis();
-		for(People people : list) {
-			people.setSyncTime(syncTime);
-			CreateOrUpdateStatus status = manDao().createOrUpdate(people);
-			for(Phone phone: people.getPhone()) {
-				phone.setSyncTime(syncTime);
-				numDao().createOrUpdate(phone);
-			}
-			log.warning(status.isCreated() + " " + status.isUpdated());
-		}
-		DeleteBuilder<Phone, Long> pb = numDao().deleteBuilder();
-		pb.where().ne("syncTime", syncTime);
-		numDao().delete(pb.prepare());
-		
-		DeleteBuilder<People, Long> db = manDao().deleteBuilder();
-		db.where().ne("syncTime", syncTime);
-		manDao().delete(db.prepare());
-	}
+//	@SneakyThrows
+//	public void sync(Collection<People> list) {
+//		final long syncTime = System.currentTimeMillis();
+//		for(People people : list) {
+//			people.setSyncTime(syncTime);
+//			CreateOrUpdateStatus status = manDao().createOrUpdate(people);
+//			for(Phone phone: people.getPhone()) {
+//				phone.setSyncTime(syncTime);
+//				numDao().createOrUpdate(phone);
+//			}
+//			log.warning(status.isCreated() + " " + status.isUpdated());
+//		}
+//		DeleteBuilder<Phone, Long> pb = numDao().deleteBuilder();
+//		pb.where().ne("syncTime", syncTime);
+//		numDao().delete(pb.prepare());
+//		
+//		DeleteBuilder<People, Long> db = manDao().deleteBuilder();
+//		db.where().ne("syncTime", syncTime);
+//		manDao().delete(db.prepare());
+//	}
 
-	@SneakyThrows
-	public void update(Phone phone) {
-		numDao().update(phone);
-	}
+//	@SneakyThrows
+//	public void update(Phone phone) {
+//		numDao().update(phone);
+//	}
 	
 	
 	@SneakyThrows

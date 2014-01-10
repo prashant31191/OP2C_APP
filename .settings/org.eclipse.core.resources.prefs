@@ -1,6 +1,7 @@
 eclipse.preferences.version=1
 encoding//src/org/itri/icl/x300/op2ca/App.java=UTF-8
 encoding//src/org/itri/icl/x300/op2ca/adapter/DeviceAdapter.java=UTF-8
+encoding//src/org/itri/icl/x300/op2ca/adapter/FriendAdapter.java=UTF-8
 encoding//src/org/itri/icl/x300/op2ca/adapter/FunctionAdapter.java=UTF-8
 encoding//src/org/itri/icl/x300/op2ca/adapter/ShareAdapter.java=UTF-8
 encoding//src/org/itri/icl/x300/op2ca/db/OpDB.java=UTF-8

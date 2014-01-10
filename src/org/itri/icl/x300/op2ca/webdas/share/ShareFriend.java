@@ -12,11 +12,12 @@ import org.itri.icl.x300.op2ca.R;
 import org.itri.icl.x300.op2ca.adapter.FriendAdapter;
 import org.itri.icl.x300.op2ca.adapter.ShareAdapter;
 import org.itri.icl.x300.op2ca.data.Device;
-import org.itri.icl.x300.op2ca.data.Phone;
 import org.itri.icl.x300.op2ca.data.ext.ContactArg;
 import org.itri.icl.x300.op2ca.db.OpDB;
 import org.itri.icl.x300.op2ca.utils.OrmLiteRoboFragment;
 import org.itri.icl.x300.op2ca.webdas.Main;
+
+import data.Contacts.Contact;
 
 import roboguice.inject.InjectView;
 import android.app.Service;
@@ -121,7 +122,7 @@ public class ShareFriend extends OrmLiteRoboFragment<OpDB> implements LoaderCall
 //			mAdapter.writeChecked();
 //			mAdapter.clearChecked();
 		} else if (v == mBtnConfirm) {
-			ArrayList<Phone> checked = mAdapter.readChecked();
+			ArrayList<ContactArg> checked = mAdapter.readChecked();
 			Bundle bundle = new Bundle();
 			bundle.putParcelableArrayList("people", checked);
 			((Main)getActivity()).prev(bundle);
@@ -148,7 +149,7 @@ public class ShareFriend extends OrmLiteRoboFragment<OpDB> implements LoaderCall
 
 	@Override
 	public void onItemClick(AdapterView<?> view, View arg1, int pos, long arg3) {
-		Phone phone = mAdapter.getItem(pos);
+		Contact phone = mAdapter.getItem(pos);
         mAdapter.write(phone);
         mAdapter.notifyDataSetChanged();
 	}

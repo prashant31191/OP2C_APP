@@ -4,25 +4,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
-import javax.inject.Provider;
 
 import lombok.extern.java.Log;
 
-import org.itri.icl.x300.op2ca.App;
-import org.itri.icl.x300.op2ca.HttpProvider;
 import org.itri.icl.x300.op2ca.R;
 import org.itri.icl.x300.op2ca.adapter.ShareAdapter;
 import org.itri.icl.x300.op2ca.data.Device;
 import org.itri.icl.x300.op2ca.data.Function;
-import org.itri.icl.x300.op2ca.data.Phone;
+import org.itri.icl.x300.op2ca.data.ext.ContactArg;
 import org.itri.icl.x300.op2ca.db.OpDB;
 import org.itri.icl.x300.op2ca.ui.FriendListView;
 import org.itri.icl.x300.op2ca.utils.OrmLiteRoboFragment;
 import org.itri.icl.x300.op2ca.webdas.Main;
-import org.itri.icl.x300.op2ca.webdas.mgnt.ShareTree;
-import org.linphone.LinphoneManager;
-import org.linphone.mediastream.video.VideoPreviewWindow;
-import org.linphone.mediastream.video.VideoPreviewWindow.VideoWindowListener;
 
 import roboguice.inject.InjectView;
 import android.os.Bundle;
@@ -32,25 +25,16 @@ import android.support.v4.content.Loader;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
-import android.view.SurfaceView;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.GridView;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
-import android.widget.Spinner;
 import android.widget.TabWidget;
 import android.widget.TextView;
 import android.widget.ToggleButton;
-
-import com.google.common.base.Joiner;
-
-import conn.Http;
 
 @Log
 public class ShareEdit extends OrmLiteRoboFragment<OpDB> implements LoaderCallbacks<List<Device>>, OnClickListener, TextWatcher {
@@ -75,7 +59,7 @@ public class ShareEdit extends OrmLiteRoboFragment<OpDB> implements LoaderCallba
 	
 	public ShareEdit() {
 		Bundle bundle = new Bundle();
-		bundle.putParcelableArrayList("people", new ArrayList<Phone>());
+		bundle.putParcelableArrayList("people", new ArrayList<ContactArg>());
 		bundle.putParcelableArrayList("device", new ArrayList<Function>());
 		setArguments(bundle);
 		
@@ -110,7 +94,7 @@ public class ShareEdit extends OrmLiteRoboFragment<OpDB> implements LoaderCallba
 		mAdapter = new ShareAdapter();
 		mBtnDevice.setOnClickListener(this);
 		mBtnSubmit.setOnClickListener(this);
-		mLytMembers.setData(getArguments().<Phone>getParcelableArrayList("people"));
+		mLytMembers.setData(getArguments().<ContactArg>getParcelableArrayList("people"));
 ////		Function fun = getHelper().getFunction();
 //		if (getArguments() != null && getArguments().containsKey("people")) {
 //			
@@ -118,7 +102,7 @@ public class ShareEdit extends OrmLiteRoboFragment<OpDB> implements LoaderCallba
 		if (getArguments() != null && !getArguments().getParcelableArrayList("device").isEmpty()) {
 			log.warning("create share Video");
 			mShareVideo =  new EmbeddedVideo(getArguments().<Device>getParcelableArrayList("device"),
-											 getArguments().<Phone>getParcelableArrayList("people")); //目前只有Video 先這樣寫
+											 getArguments().<ContactArg>getParcelableArrayList("people")); //目前只有Video 先這樣寫
 			mMgr.beginTransaction().add(R.id.share_embedded, mShareVideo, "share").commit();
 		}
 		

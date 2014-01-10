@@ -15,7 +15,6 @@ import org.itri.icl.x300.op2ca.App;
 import org.itri.icl.x300.op2ca.R;
 import org.itri.icl.x300.op2ca.data.Device;
 import org.itri.icl.x300.op2ca.data.Function;
-import org.itri.icl.x300.op2ca.data.Phone;
 import org.itri.icl.x300.op2ca.db.OpDB;
 import org.itri.icl.x300.op2ca.utils.DeviceDao;
 

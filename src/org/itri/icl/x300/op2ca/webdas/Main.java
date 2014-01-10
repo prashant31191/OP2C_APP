@@ -1,51 +1,31 @@
 package org.itri.icl.x300.op2ca.webdas;
 
 import static android.support.v4.app.FragmentTransaction.TRANSIT_FRAGMENT_OPEN;
-
-import java.util.ArrayList;
-import java.util.UUID;
-
-import javax.inject.Inject;
-
 import lombok.SneakyThrows;
 import lombok.extern.java.Log;
 
 import org.itri.icl.x300.op2ca.R;
-import org.itri.icl.x300.op2ca.data.Phone;
 import org.itri.icl.x300.op2ca.db.OpDB;
 import org.itri.icl.x300.op2ca.dialog.CriteriaDialog;
 import org.itri.icl.x300.op2ca.utils.OrmLiteRoboFragmentActivity;
 import org.itri.icl.x300.op2ca.utils.TabManager;
-import org.itri.icl.x300.op2ca.webdas.mgnt.MgmtHome;
-import org.itri.icl.x300.op2ca.webdas.mon.SyncPeople;
 import org.itri.icl.x300.op2ca.webdas.share.ShareEdit;
-import org.itri.icl.x300.op2ca.webdas.share.ShareFriend;
-import org.itri.icl.x300.op2ca.webdas.share.ShareHome;
 import org.linphone.AccountPreferencesFragment;
-import org.linphone.LinphoneLauncherActivity;
 import org.linphone.LinphoneManager;
 import org.linphone.LinphonePreferences;
-import org.linphone.LinphoneService;
-import org.linphone.SettingsFragment;
-
-import com.google.common.collect.Lists;
 
 import roboguice.inject.ContentView;
 import roboguice.inject.InjectView;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentManager.BackStackEntry;
 import android.support.v4.app.FragmentTransaction;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.Spinner;
 import android.widget.TabHost;
 import android.widget.TabWidget;
 import android.widget.TextView;

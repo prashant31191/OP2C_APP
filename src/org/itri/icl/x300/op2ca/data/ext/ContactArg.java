@@ -1,5 +1,6 @@
 package org.itri.icl.x300.op2ca.data.ext;
 
+import data.Contacts.Contact;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +13,7 @@ public class ContactArg implements Parcelable {
 
 	@NonNull String userID;
 	@NonNull String displayName;
+	@NonNull String lookuoKey;
     
     @Override
 	public int describeContents() {
@@ -22,11 +24,13 @@ public class ContactArg implements Parcelable {
 	public void writeToParcel(Parcel dest, int flags) {
 		dest.writeString(userID);
 		dest.writeString(displayName);
+		dest.writeString(lookuoKey);
 	}
 
 	public ContactArg(Parcel p) {
 		userID = p.readString();
 		displayName = p.readString();
+		lookuoKey = p.readString();
 	}
 	public static final Parcelable.Creator<ContactArg> CREATOR = new Parcelable.Creator<ContactArg>() {
 		public ContactArg createFromParcel(Parcel p) {

@@ -4,12 +4,6 @@ import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
-import org.itri.icl.x300.op2ca.data.Phone;
-
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
-import com.google.common.collect.Sets;
-
 import lombok.SneakyThrows;
 import roboguice.RoboGuice;
 import android.app.Application;
@@ -19,9 +13,15 @@ import android.net.Uri;
 import android.provider.ContactsContract.PhoneLookup;
 import android.widget.Toast;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.collect.Sets;
+
+import data.Contacts.Contact;
+
 public class App extends Application {
 	private static Context context;
-	Set<Phone> mCacheFriends = Sets.newHashSet();
+	Set<Contact> mCacheFriends = Sets.newHashSet();
 	private static Cache<String, String> mNameCache = CacheBuilder.newBuilder()
 			.expireAfterWrite(60, TimeUnit.MINUTES)
 			.build();

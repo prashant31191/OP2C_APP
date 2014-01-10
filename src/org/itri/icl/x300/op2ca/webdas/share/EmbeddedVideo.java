@@ -9,7 +9,7 @@ import lombok.extern.java.Log;
 import org.itri.icl.x300.op2ca.App;
 import org.itri.icl.x300.op2ca.R;
 import org.itri.icl.x300.op2ca.data.Device;
-import org.itri.icl.x300.op2ca.data.Phone;
+import org.itri.icl.x300.op2ca.data.ext.ContactArg;
 import org.itri.icl.x300.op2ca.db.OpDB;
 import org.itri.icl.x300.op2ca.utils.CloudPlay;
 import org.itri.icl.x300.op2ca.utils.CloudPlay.OpenListener;
@@ -51,8 +51,8 @@ public class EmbeddedVideo extends OrmLiteRoboFragment<OpDB> implements VideoPre
 	
 	List<Device> mDevice;
 	@Inject CloudPlay mPlay;
-	List<Phone> mPeople;
-	public EmbeddedVideo(List<Device> device, List<Phone> people) {
+	List<ContactArg> mPeople;
+	public EmbeddedVideo(List<Device> device, List<ContactArg> people) {
 		mDevice = device;
 		mPeople = people;
 		
