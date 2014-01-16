@@ -46,7 +46,7 @@ public class FriendAdapter extends ArrayAdapter<Contact> {
 		Collection<Contact> transed = Collections2.transform(checked, new Function<ContactArg, Contact>() {
 			@Override
 			public Contact apply(ContactArg arg0) {
-				return new Contact(arg0.getUserID(), arg0.getDisplayName(), arg0.getLookuoKey());
+				return Contact.of(arg0.getUserID(), arg0.getDisplayName(), arg0.getLookuoKey());
 			}
 		});
 		mChecked.addAll(transed);

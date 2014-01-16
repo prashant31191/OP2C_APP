@@ -9,8 +9,7 @@ import lombok.SneakyThrows;
 
 import org.itri.icl.x300.op2ca.R;
 import org.itri.icl.x300.op2ca.adapter.ShareAdapter;
-import org.itri.icl.x300.op2ca.data.Device;
-import org.itri.icl.x300.op2ca.data.Resource;
+import org.itri.icl.x300.op2ca.data.ResourceV1;
 import org.itri.icl.x300.op2ca.db.OpDB;
 import org.itri.icl.x300.op2ca.utils.OrmLiteRoboFragment;
 import org.itri.icl.x300.op2ca.webdas.Main;
@@ -43,7 +42,9 @@ import com.j256.ormlite.android.extras.OrmliteListLoader;
 import com.j256.ormlite.stmt.PreparedQuery;
 import com.j256.ormlite.stmt.QueryBuilder;
 
-public class ShareHome extends OrmLiteRoboFragment<OpDB> implements LoaderCallbacks<List<Resource>>, OnItemClickListener, OnClickListener, OnCheckedChangeListener, OnItemSelectedListener {
+import data.OPInfos.OPInfo;
+
+public class ShareHome extends OrmLiteRoboFragment<OpDB> implements LoaderCallbacks<List<OPInfo>>, OnItemClickListener, OnClickListener, OnCheckedChangeListener, OnItemSelectedListener {
 
 	@InjectView(R.id.btnText) LinearLayout mBtnText;
 	@InjectView(R.id.btnFile) LinearLayout mBtnFile;
@@ -100,33 +101,33 @@ public class ShareHome extends OrmLiteRoboFragment<OpDB> implements LoaderCallba
 	}
 	
 	@Override @SneakyThrows
-	public Loader<List<Resource>> onCreateLoader(int arg0, Bundle bundle) {
-		QueryBuilder<Resource, Long> queryBuilder = getHelper().resDao().queryBuilder();
+	public Loader<List<OPInfo>> onCreateLoader(int arg0, Bundle bundle) {
+		QueryBuilder<OPInfo, String> queryBuilder = getHelper().infoDao().queryBuilder();
 		switch (bundle.getInt("order", 0)) {
 		case 0:queryBuilder.orderBy("createTime", false);break;
 		case 1:queryBuilder.orderBy("endDate", false);break;
 		case 2:queryBuilder.orderBy("like", false);break;
 		default:queryBuilder.orderBy("expireTime", false);break;
 		}
-		PreparedQuery<Resource> preparedQuery = queryBuilder.prepare();
-		return new OrmliteListLoader<Resource, Long>(getActivity(), getHelper().resDao(), preparedQuery);
+		PreparedQuery<OPInfo> preparedQuery = queryBuilder.prepare();
+		return new OrmliteListLoader<OPInfo, String>(getActivity(), getHelper().infoDao(), preparedQuery);
 	}
 
 	@Override
-	public void onLoadFinished(Loader<List<Resource>> arg0, List<Resource> res) {
+	public void onLoadFinished(Loader<List<OPInfo>> arg0, List<OPInfo> res) {
 		mAdapter.clear();
 		mAdapter.addAll(res);
 	}
 
 	@Override
-	public void onLoaderReset(Loader<List<Resource>> arg0) {
+	public void onLoaderReset(Loader<List<OPInfo>> arg0) {
 		mAdapter.clear();
 	}
 
 	@Override
 	public void onItemClick(AdapterView<?> arg0, View arg1, int pos, long arg3) {
-		Resource resource = mAdapter.getItem(pos);
-		((Main)getActivity()).next(new ShareStream(resource));
+		OPInfo resource = mAdapter.getItem(pos);
+		//((Main)getActivity()).next(new ShareStream(resource));
 		
 	}
 

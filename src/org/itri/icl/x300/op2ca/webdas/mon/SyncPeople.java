@@ -41,7 +41,7 @@ public class SyncPeople extends OrmLiteRoboIntentService<OpDB> {
 			String lookupKey = cursor.getString(lookupIndex);
 			String displayName = cursor.getString(displayNameIndex);
 			String number = cursor.getString(numberIndex);
-			ctcts.add(new Contact(number, displayName, lookupKey));
+			ctcts.add(Contact.of(number, displayName, lookupKey));
 //			if(hm.containsKey(cursor.getString(lookupIndex))) {
 //				People people = hm.get(lookupKey);
 //				people.add(Phone.of(cursor.getString(numberIndex)));

@@ -18,5 +18,5 @@ public class Message {
 	@DatabaseField @NonNull String to;
 	@DatabaseField @NonNull String content;
 	@DatabaseField @NonNull Long time;
-	@DatabaseField(canBeNull=false, foreign=true, foreignAutoRefresh=true) @NonNull Resource resource;
+	@DatabaseField(canBeNull=false, foreign=true, foreignAutoRefresh=true) @NonNull ResourceV1 resource;
 }

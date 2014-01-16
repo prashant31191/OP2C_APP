@@ -4,19 +4,21 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.itri.icl.x300.op2ca.data.Device;
-import org.itri.icl.x300.op2ca.data.Function;
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import data.Resources.Resource;
 
-public class ResourceArg extends Resource implements Parcelable {
+@Getter @Setter @RequiredArgsConstructor(suppressConstructorProperties=true)
+public class ResourceArg implements Parcelable {
 
-	String uri;
-    String displayName;
-    List<CapabilityArg> capabilities;
-    String status; 
+	@NonNull String uri;
+	@NonNull String displayName;
+	Collection<CapabilityArg> capabilities;
+	@NonNull String status; 
 
     int index = 0;
 	public CapabilityArg next() {

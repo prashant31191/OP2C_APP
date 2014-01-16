@@ -4,6 +4,7 @@ import static android.support.v4.app.FragmentTransaction.TRANSIT_FRAGMENT_OPEN;
 import lombok.SneakyThrows;
 import lombok.extern.java.Log;
 
+import org.itri.icl.x300.op2ca.App;
 import org.itri.icl.x300.op2ca.R;
 import org.itri.icl.x300.op2ca.db.OpDB;
 import org.itri.icl.x300.op2ca.dialog.CriteriaDialog;
@@ -13,9 +14,11 @@ import org.itri.icl.x300.op2ca.webdas.share.ShareEdit;
 import org.linphone.AccountPreferencesFragment;
 import org.linphone.LinphoneManager;
 import org.linphone.LinphonePreferences;
+import org.linphone.SettingsFragment;
 
 import roboguice.inject.ContentView;
 import roboguice.inject.InjectView;
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -57,10 +60,9 @@ public class Main extends OrmLiteRoboFragmentActivity<OpDB> implements OnClickLi
 		}
 		LinphonePreferences mNewPrefs = LinphonePreferences.instance();
 		if (mNewPrefs.getAccountCount() == 0) { // 尚未建立過帳號
-			startActivity(new Intent(this, Login.class));
-		}
-		
-		
+			log.warning("尚未建立過帳號");
+			startActivityForResult(new Intent(this, Login.class), 100);
+		} 
 		mTabHost.setup();
 		mTabManager = new TabManager(this, mTabHost, R.id.realtabcontent);
 		Bundle bundle1 = new Bundle();
@@ -69,35 +71,41 @@ public class Main extends OrmLiteRoboFragmentActivity<OpDB> implements OnClickLi
 		Bundle bundle2 = new Bundle();
 		bundle2.putBoolean("outbox", true);
 		mTabManager.add("分享", R.drawable.tab_02, Dispatch.class, bundle2);
-		
+
 		mTabManager.add("訊息", R.drawable.tab_03, Setup.class, bundle2);
 		Bundle bundle3 = new Bundle();
 		bundle3.putBoolean("mgmt", true);
-		mTabManager.add("設定", R.drawable.tab_04, Dispatch.class, bundle3); //Dispatch SettingsFragment
+		mTabManager.add("設定", R.drawable.tab_04, SettingsFragment.class, bundle3); //Dispatch SettingsFragment
 		Bundle bundle4 = new Bundle();
 		bundle4.putBoolean("other", true);
 		mTabManager.add("其他", R.drawable.tab_05, AccountPreferencesFragment.class, bundle4);
-//			int numberOfTabs = mTabHost.getTabWidget().getChildCount();
-//		    for(int t=0; t<numberOfTabs; t++){
-//		    	mTabHost.getTabWidget().getChildAt(t).setOnTouchListener(new View.OnTouchListener() {
-//
-//					@Override
-//					public boolean onTouch(View v, MotionEvent event) {
-//						if (event.getY() < 45) {
-//							return true;
-//						} else {
-//							return false;
-//						}}
-//		        });
-//		    }       
+	//			int numberOfTabs = mTabHost.getTabWidget().getChildCount();
+	//		    for(int t=0; t<numberOfTabs; t++){
+	//		    	mTabHost.getTabWidget().getChildAt(t).setOnTouchListener(new View.OnTouchListener() {
+	//
+	//					@Override
+	//					public boolean onTouch(View v, MotionEvent event) {
+	//						if (event.getY() < 45) {
+	//							return true;
+	//						} else {
+	//							return false;
+	//						}}
+	//		        });
+	//		    }       
 		if (state != null) {
 			mTabHost.setCurrentTabByTag(state.getString("tab"));
 		}
-		
 		mBtnSort.setOnClickListener(this);
-//		mBtnSort.setAdapter(new ArrayAdapter<String>(this, R.layout.op2c_spinner_item, new String[] {"發佈日期", "有效日期", "點擊率"}) {{
-//	    	setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-//	    }});
+	}
+	
+	// login 未完成 按下back鍵, 主程式也要關閉。
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+		log.warning("code: " + requestCode + " " + resultCode);
+		if (requestCode == 100 && App.NO_REGISTER == resultCode) {
+			finish();
+		}
 	}
 	
 //	public void addNewTab(Context context, Class<?> cls, String tabName){

@@ -1,18 +1,20 @@
 package org.itri.icl.x300.op2ca.data.ext;
 
 import lombok.Getter;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import android.os.Parcel;
 import android.os.Parcelable;
 import data.Capability;
 import data.Resources.Resource;
 
-@Getter @Setter
+@Getter @Setter @RequiredArgsConstructor(suppressConstructorProperties=true)
 public class CapabilityArg implements Parcelable {
-	Long id;
-    String type;
-    String text;
-	ResourceArg resource;
+	@NonNull Long id;
+	@NonNull String type;
+	@NonNull String text;
+	@NonNull ResourceArg resource;
 
 	@Override
 	public int describeContents() {return 0;}

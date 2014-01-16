@@ -11,7 +11,6 @@ import lombok.extern.java.Log;
 import org.itri.icl.x300.op2ca.R;
 import org.itri.icl.x300.op2ca.adapter.FriendAdapter;
 import org.itri.icl.x300.op2ca.adapter.ShareAdapter;
-import org.itri.icl.x300.op2ca.data.Device;
 import org.itri.icl.x300.op2ca.data.ext.ContactArg;
 import org.itri.icl.x300.op2ca.db.OpDB;
 import org.itri.icl.x300.op2ca.utils.OrmLiteRoboFragment;
@@ -46,7 +45,7 @@ import android.widget.TextView;
 import android.widget.ToggleButton;
 
 @Log
-public class ShareFriend extends OrmLiteRoboFragment<OpDB> implements LoaderCallbacks<List<Device>>, OnClickListener, OnItemClickListener, TextWatcher {
+public class ShareFriend extends OrmLiteRoboFragment<OpDB> implements LoaderCallbacks<List<Contact>>, OnClickListener, OnItemClickListener, TextWatcher {
 
 	@InjectView(R.id.editText) EditText mEditText;
 	@InjectView(R.id.btnReset) Button mBtnReset;
@@ -133,17 +132,17 @@ public class ShareFriend extends OrmLiteRoboFragment<OpDB> implements LoaderCall
 	}
 
 	@Override
-	public Loader<List<Device>> onCreateLoader(int arg0, Bundle arg1) {
+	public Loader<List<Contact>> onCreateLoader(int arg0, Bundle arg1) {
 		return null;
 	}
 
 	@Override
-	public void onLoadFinished(Loader<List<Device>> arg0, List<Device> arg1) {
+	public void onLoadFinished(Loader<List<Contact>> arg0, List<Contact> arg1) {
 		
 	}
 
 	@Override
-	public void onLoaderReset(Loader<List<Device>> arg0) {
+	public void onLoaderReset(Loader<List<Contact>> arg0) {
 		
 	}
 

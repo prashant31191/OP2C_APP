@@ -49,13 +49,45 @@
         android:layout_above="@+id/videoTools"
         android:layout_below="@+id/videoHeader" >
 
-        <org.linphone.mediastream.video.display.GL2JNIView
+       
+<!--         <LinearLayout android:layout_width="match_parent"
+       				  android:layout_height="match_parent"
+       				  android:orientation="vertical"
+       				  >
+            
+                    <org.linphone.mediastream.video.display.GL2JNIView
             android:id="@+id/videoCapture"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="50dp"
             android:layout_marginLeft="15dp"
             android:layout_marginRight="15dp"
             android:visibility="visible" />
+        
+    	<SurfaceView
+            android:id="@+id/videoPreview"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:visibility="visible" />
+        </LinearLayout> -->
+       
+
+         <org.linphone.mediastream.video.display.GL2JNIView
+            android:id="@+id/videoCapture"
+            android:layout_width="match_parent"
+            android:layout_height="fill_parent"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:visibility="visible" />
+
+        <SurfaceView
+            android:id="@+id/videoPreview"
+            android:layout_width="match_parent"
+            android:layout_height="fill_parent"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:visibility="visible" /> 
 
         <ImageView
             android:id="@+id/imgRecord"
@@ -67,29 +99,62 @@
             android:layout_marginTop="10dp"
             android:src="@drawable/webdas_vedio_rec" />
 
-        <ImageButton
-            android:id="@+id/btnRecord"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_marginBottom="5dp"
-            android:layout_marginRight="5dp"
-            android:layout_toLeftOf="@+id/btnCancel"
-            android:background="#00000000"
-            android:src="@drawable/webdas_vedio_play"
-            android:textColor="#ff0000" />
-
-        <ImageButton
-            android:id="@+id/btnCancel"
+        <LinearLayout
+            android:id="@+id/lytBtnReady"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_alignParentRight="true"
-            android:layout_marginBottom="5dp"
-            android:layout_marginRight="25dp"
-            android:background="#00000000"
-            android:src="@drawable/webdas_video_stop"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
+            android:visibility="gone" >
+
+            <ImageButton
+                android:id="@+id/btnStart1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:layout_marginRight="5dp"
+                android:background="#00000000"
+                android:src="@drawable/webdas_video_rec_on"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <ImageButton
+                android:id="@+id/btnStop1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:layout_marginRight="25dp"
+                android:background="#00000000"
+                android:src="@drawable/webdas_video_no"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/lytBtnStart"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true" >
+
+            <ImageButton
+                android:id="@+id/btnPause"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:layout_marginRight="5dp"
+                android:background="#00000000"
+                android:src="@drawable/webdas_video_wait"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <ImageButton
+                android:id="@+id/btnStop2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:layout_marginRight="25dp"
+                android:background="#00000000"
+                android:src="@drawable/webdas_video_stop"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+        </LinearLayout>
     </RelativeLayout>
 
     <RelativeLayout

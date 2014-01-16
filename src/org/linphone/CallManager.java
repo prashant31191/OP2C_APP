@@ -20,7 +20,7 @@ package org.linphone;
 
 import java.util.UUID;
 
-import org.itri.icl.x300.op2ca.data.Resource;
+import org.itri.icl.x300.op2ca.data.ResourceV1;
 import org.linphone.core.LinphoneAddress;
 import org.linphone.core.LinphoneCall;
 import org.linphone.core.LinphoneCallParams;
@@ -76,7 +76,7 @@ public class CallManager {
 		lc.inviteAddressWithParams(lAddress, params);
 	}
 	
-	public void inviteResource(LinphoneAddress lAddress, Resource resource, boolean videoEnabled, boolean lowBandwidth) throws LinphoneCoreException {
+	public void inviteResource(LinphoneAddress lAddress, ResourceV1 resource, boolean videoEnabled, boolean lowBandwidth) throws LinphoneCoreException {
 		LinphoneCore lc = LinphoneManager.getLc();
 		LinphoneCallParams params = lc.createDefaultCallParameters();
 //		android.util.Log.w("yf25", "1. default codec =  " + params.getUsedVideoCodec() + ", " + params.getVideoEnabled());

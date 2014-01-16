@@ -14,6 +14,7 @@ public class HttpProvider implements Provider<Http> {
     public Http get() {
     	Http http = new Http();
     	Account account = acc.get();
+    	http.setBase("http://140.96.116.38:8080");
     	http.setAuth(account.getUsername(), account.getPassword());
     	return http;
     }

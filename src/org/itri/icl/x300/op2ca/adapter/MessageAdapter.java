@@ -10,10 +10,8 @@ import lombok.extern.java.Log;
 import org.itri.icl.x300.op2ca.App;
 import org.itri.icl.x300.op2ca.R;
 import org.itri.icl.x300.op2ca.data.Message;
-import org.itri.icl.x300.op2ca.data.Resource;
-import org.linphone.LinphoneSimpleListener.OnResourceStateChangedListener;
-import org.linphone.core.LinphoneCall;
-import org.linphone.core.LinphoneCall.State;
+
+import data.Comments.Comment;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -26,7 +24,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 @Log
-public class MessageAdapter extends ArrayAdapter<Message> implements
+public class MessageAdapter extends ArrayAdapter<Comment> implements
 		OnClickListener {
 	SimpleDateFormat mFmt = new SimpleDateFormat("MM/dd, hh:mm");
 	LayoutInflater vi;
@@ -83,13 +81,13 @@ public class MessageAdapter extends ArrayAdapter<Message> implements
 	
 	public View getView(int position, View convertView, ViewGroup parent) {
 		// first get the animal from our data model
-		Message item = getItem(position);
-		log.warning("holder2 " + item.getContent() + " " + item.getFrom() + " " + item.getTo());
+		Comment item = getItem(position);
+		log.warning("holder2 " + item.getContent() + " " + item.getUserID() + " " + item.getOpInfo().getOpID());
 		// if we have an image so we setup an the view for an image row
 		ViewHolder holder;
 		View view = convertView;
 		if (view == null) {
-			if ("SELF".equalsIgnoreCase(item.getFrom())) {
+			if ("SELF".equalsIgnoreCase(item.getUserID())) {
 				log.warning("holder1 right");
 				view = (RelativeLayout) vi.inflate(R.layout.op2c_item_msg_right, null);
 			} else {
@@ -108,10 +106,10 @@ public class MessageAdapter extends ArrayAdapter<Message> implements
 
 //		holder.imgPeople.setImageResource(item.getImageId());
 		holder.txtMesage.setText(item.getContent());
-		if ("SELF".equalsIgnoreCase(item.getFrom()))
-			holder.txtPeople.setText(App.getNameCache(item.getTo()));
-		else 
-			holder.txtPeople.setText(App.getNameCache(item.getFrom()));
+//		if ("SELF".equalsIgnoreCase(item.getUserID()))
+//			holder.txtPeople.setText(App.getNameCache(item.getTo()));
+//		else 
+			holder.txtPeople.setText(App.getNameCache(item.getUserID()));
 		holder.txtDate.setText(mFmt.format(item.getTime()));
 		return view;
 	}

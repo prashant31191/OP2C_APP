@@ -1,6 +1,5 @@
 package org.itri.icl.x300.op2ca.data.ext;
 
-import data.Contacts.Contact;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;

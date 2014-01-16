@@ -10,10 +10,10 @@ import lombok.extern.java.Log;
 
 import org.itri.icl.x300.op2ca.R;
 import org.itri.icl.x300.op2ca.adapter.MessageAdapter;
-import org.itri.icl.x300.op2ca.data.Device;
 import org.itri.icl.x300.op2ca.data.Message;
-import org.itri.icl.x300.op2ca.data.Resource;
+import org.itri.icl.x300.op2ca.data.ResourceV1;
 import org.itri.icl.x300.op2ca.data.ext.ContactArg;
+import org.itri.icl.x300.op2ca.data.ext.ResourceArg;
 import org.itri.icl.x300.op2ca.db.OpDB;
 import org.itri.icl.x300.op2ca.utils.OrmLiteRoboFragment;
 import org.itri.icl.x300.op2ca.webdas.Main;
@@ -43,8 +43,11 @@ import com.j256.ormlite.android.extras.OrmliteListLoader;
 import com.j256.ormlite.stmt.PreparedQuery;
 import com.j256.ormlite.stmt.QueryBuilder;
 
+import data.Comments.Comment;
+import data.OPInfos.OPInfo;
+
 @Log
-public class ShareStream extends OrmLiteRoboFragment<OpDB> implements LoaderCallbacks<List<Message>>, OnClickListener, OnItemClickListener {
+public class ShareStream extends OrmLiteRoboFragment<OpDB> implements LoaderCallbacks<List<Comment>>, OnClickListener, OnItemClickListener {
 	@InjectView(R.id.btnEmoji) Button mNtnEmoji;
 	@InjectView(R.id.btnLikes) Button mBtnLikes;
 	@InjectView(R.id.btnSubmit) Button mBtnSubmit;
@@ -63,12 +66,18 @@ public class ShareStream extends OrmLiteRoboFragment<OpDB> implements LoaderCall
 	TabWidget mTabWidget;
 	FragmentManager mMgr;
 	EmbeddedVideo mShareVideo;
-	Resource mResource;
+	OPInfo mResource;
+	List<ResourceArg> mDevice;
+	List<ContactArg> mPeople;
 	
-	public ShareStream() {
+	String mScene;
+	public ShareStream(List<ResourceArg> device, List<ContactArg> people, String scene) {
+		mScene = scene;
+		mDevice = device;
+		mPeople = people;
 	}
 	
-	public ShareStream(Resource resource) {
+	public ShareStream(List<ResourceArg> device, List<ContactArg> people, OPInfo resource) {
 		mResource = resource;
 //		Bundle bundle = new Bundle();
 //		bundle.putParcelableArrayList("people", new ArrayList<Phone>());
@@ -105,10 +114,8 @@ public class ShareStream extends OrmLiteRoboFragment<OpDB> implements LoaderCall
 		mIMM.hideSoftInputFromWindow(mEditMsg.getWindowToken(), 0);
 		mAdapter = new MessageAdapter();
 		mListView.setAdapter(mAdapter);
-		
 		mListView.setEmptyView(mListEmpty);
 		mListView.setOnItemClickListener(this);
-		
 		mBtnSubmit.setOnClickListener(this);
 //		mLytMembers.setData(getArguments().<Phone>getParcelableArrayList("people"));
 ////		Function fun = getHelper().getFunction();
@@ -117,7 +124,7 @@ public class ShareStream extends OrmLiteRoboFragment<OpDB> implements LoaderCall
 //		}
 //		if (getArguments() != null && !getArguments().getParcelableArrayList("device").isEmpty()) {
 //			log.warning("create share Video");
-			mShareVideo =  new EmbeddedVideo(new ArrayList<Device>(), new ArrayList<ContactArg>()); //目前只有Video 先這樣寫
+			mShareVideo = new EmbeddedVideo(mDevice, mPeople, mScene, true); //目前只有Video 先這樣寫
 			mMgr.beginTransaction().add(R.id.share_embedded, mShareVideo, "share").commit();
 //		}
 		
@@ -137,23 +144,25 @@ public class ShareStream extends OrmLiteRoboFragment<OpDB> implements LoaderCall
 		
 	}
 	@Override @SneakyThrows
-	public Loader<List<Message>> onCreateLoader(int arg0, Bundle arg1) {
-		QueryBuilder<Message, Long> qb = getHelper().msgDao().queryBuilder();
-		qb.where().eq("resource_id", mResource.get_id());
+	public Loader<List<Comment>> onCreateLoader(int arg0, Bundle arg1) {
+		QueryBuilder<Comment, Long> qb = getHelper().cmntDao().queryBuilder();
+		qb.where().eq("opInfo_id", mResource.getOpID());
 		qb.orderBy("time", false);
-		PreparedQuery<Message> preparedQuery = qb.prepare();
-		return new OrmliteListLoader<Message, Long>(getActivity(), getHelper().msgDao(), preparedQuery);
+		PreparedQuery<Comment> preparedQuery = qb.prepare();
+		return new OrmliteListLoader<Comment, Long>(getActivity(), getHelper().cmntDao(), preparedQuery);
 	}
 	@Override
-	public void onLoadFinished(Loader<List<Message>> arg0, List<Message> res) {
+	public void onLoadFinished(Loader<List<Comment>> arg0, List<Comment> res) {
 		mAdapter.clear();
 		mAdapter.addAll(res);
 	}
 	@Override
-	public void onLoaderReset(Loader<List<Message>> arg0) {
+	public void onLoaderReset(Loader<List<Comment>> arg0) {
 		mAdapter.clear();
 	}
 	@Override
 	public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
 	}
+	
+	
 }

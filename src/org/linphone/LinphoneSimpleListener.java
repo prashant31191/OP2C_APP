@@ -18,13 +18,15 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 package org.linphone;
 
-import org.itri.icl.x300.op2ca.data.Resource;
+import org.itri.icl.x300.op2ca.data.ResourceV1;
 import org.linphone.core.LinphoneAddress;
 import org.linphone.core.LinphoneCall;
 import org.linphone.core.LinphoneCall.State;
 import org.linphone.core.LinphoneChatMessage;
 import org.linphone.core.LinphoneCore.GlobalState;
 import org.linphone.core.LinphoneCore.RegistrationState;
+
+import data.OPInfos.OPInfo;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
@@ -58,7 +60,7 @@ public interface LinphoneSimpleListener {
 	}
 	
 	public static interface OnResourceStateChangedListener extends LinphoneSimpleListener {
-		void onResourceStateChanged(LinphoneCall call, State state, Resource resoure, String message);
+		void onResourceStateChanged(LinphoneCall call, State state, OPInfo info, String message);
 	}
 
 	public static interface LinphoneOnAudioChangedListener extends LinphoneSimpleListener {

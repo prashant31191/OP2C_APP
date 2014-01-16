@@ -25,7 +25,7 @@ import org.itri.icl.x300.op2ca.AccountProvider;
 import org.itri.icl.x300.op2ca.App;
 import org.itri.icl.x300.op2ca.Module;
 import org.itri.icl.x300.op2ca.R;
-import org.itri.icl.x300.op2ca.data.Resource;
+import org.itri.icl.x300.op2ca.data.ResourceV1;
 import org.linphone.LinphoneManager.NewOutgoingCallUiListener;
 import org.linphone.LinphoneSimpleListener.LinphoneServiceListener;
 import org.linphone.compatibility.Compatibility;
@@ -50,6 +50,8 @@ import schema.element.Account;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+
+import data.OPInfos.OPInfo;
 
 import android.app.Activity;
 import android.app.AlarmManager;
@@ -777,7 +779,7 @@ public final class LinphoneService extends Service implements LinphoneServiceLis
 
 	@Override
 	public void onResourceStateChanged(LinphoneCall call, State state,
-			Resource resoure, String message) {
+			OPInfo resoure, String message) {
 		// TODO Auto-generated method stub
 		
 	}

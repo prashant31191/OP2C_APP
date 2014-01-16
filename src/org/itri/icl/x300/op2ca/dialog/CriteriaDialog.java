@@ -44,7 +44,7 @@ public class CriteriaDialog extends OrmLiteRoboDialogFragment<OpDB> implements O
 		mListView.setAdapter(new ArrayAdapter<String>(getActivity(), android.R.layout.simple_expandable_list_item_1, new String[] {"點擊率", "發佈日期"}));
 		Point size = new Point();
 		mWm.getDefaultDisplay().getSize(size);
-		getDialog().getWindow().setLayout((int)(size.x * 0.6), LayoutParams.WRAP_CONTENT);
+		getDialog().getWindow().setLayout((int)(size.x * 0.8), LayoutParams.WRAP_CONTENT);
 		getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(0));
 	}
 

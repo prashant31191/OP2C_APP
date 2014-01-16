@@ -17,23 +17,19 @@
             android:id="@+id/viewVideo"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:layout_above="@+id/btnTalk"
+            android:layout_above="@+id/prevVideo"
             android:layout_alignParentLeft="true"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
             android:layout_marginTop="10dp" />
 
-        <!--
              <SurfaceView
-            android:id="@+id/viewVideo"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
+            android:visibility="visible"
+            android:id="@+id/prevVideo"
+            android:layout_width="1dp"
+            android:layout_height="1dp"
             android:layout_above="@+id/btnTalk"
-            android:layout_alignParentLeft="true"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:layout_marginTop="10dp" />
-        -->
+            android:layout_alignParentLeft="true" />
 
         <Button
             android:id="@+id/btnTalk"

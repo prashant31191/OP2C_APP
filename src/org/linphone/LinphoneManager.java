@@ -47,7 +47,7 @@ import javax.inject.Provider;
 import org.itri.icl.x300.op2ca.App;
 import org.itri.icl.x300.op2ca.Module;
 import org.itri.icl.x300.op2ca.R;
-import org.itri.icl.x300.op2ca.data.Resource;
+import org.itri.icl.x300.op2ca.data.ResourceV1;
 import org.itri.icl.x300.op2ca.db.OpDB;
 import org.itri.icl.x300.op2ca.utils.CloudPlay;
 import org.itri.icl.x300.op2ca.utils.CloudPlay.FindListener;
@@ -108,6 +108,8 @@ import com.google.inject.Injector;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 
 import conn.Http;
+import data.OPInfos.OPInfo;
+import data.Resources.Resource;
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
@@ -196,6 +198,8 @@ public class LinphoneManager implements LinphoneCoreListener {
 	}
 
 	
+	Provider<CloudPlay> mCloudPlay;
+	CloudPlay CloudPlay2;
 	Operations factory;
 	Provider<Http> mHttp;
 	public OpDB getDB() {
@@ -227,6 +231,8 @@ public class LinphoneManager implements LinphoneCoreListener {
 		Injector injector = Guice.createInjector(new Module());
 		factory = injector.getInstance(Operations.class);
 		mHttp = injector.getProvider(Http.class);
+		mCloudPlay = injector.getProvider(CloudPlay.class);
+		CloudPlay2 = mCloudPlay.get();
 	}
 
 	private static final int LINPHONE_VOLUME_STREAM = STREAM_VOICE_CALL;
@@ -423,12 +429,12 @@ public class LinphoneManager implements LinphoneCoreListener {
 		return mLPConfigXsd;
 	}
 
-	Cache<Long, Resource> mResCache = CacheBuilder.newBuilder()
+	Cache<Long, OPInfo> mResCache = CacheBuilder.newBuilder()
 													.maximumSize(1000)
 													.build();
 
 //	MinMaxPriorityQueue<Resource> outQueue = MinMaxPriorityQueue.maximumSize(100).create();
-	public void play(Resource resource) {
+	public void play(OPInfo resource) {
 //		AddressText addressText = new AddressText(App.getCtx(), null);
 //		addressText.setContactAddress(resource.getSender(), App.getNameCache(resource.getSender()));
 		newOutgoingPlay(resource);
@@ -436,14 +442,16 @@ public class LinphoneManager implements LinphoneCoreListener {
 //		mResCache.put(arg0, arg1)
 	}
 	
-	public void newOutgoingPlay(Resource resource) {
+	public void newOutgoingPlay(OPInfo resource) {
 		if (mLc.isIncall()) {
 			mListenerDispatcher.tryingNewOutgoingCallButAlreadyInCall();
 			return;
 		}
 		LinphoneAddress lAddress;
 		try {
-			lAddress = mLc.interpretUrl(resource.getSender());
+			lAddress = mLc.interpretUrl(resource.getSenderID());
+			
+			android.util.Log.wtf("chatroom", lAddress.asStringUriOnly() + " addrURL");
 			if (mServiceContext.getResources().getBoolean(R.bool.override_domain_using_default_one)) {
 				lAddress.setDomain(mServiceContext.getString(R.string.default_domain));
 			}
@@ -457,7 +465,7 @@ public class LinphoneManager implements LinphoneCoreListener {
 			return;
 		}
 		
-		lAddress.setDisplayName(App.getNameCache(resource.getSender()));
+		lAddress.setDisplayName(App.getNameCache(resource.getSenderID()));
 
 		boolean isLowBandwidthConnection = !LinphoneUtils.isHightBandwidthConnection(LinphoneService.instance().getApplicationContext());
 		
@@ -466,7 +474,7 @@ public class LinphoneManager implements LinphoneCoreListener {
 				if (Version.isVideoCapable()) {
 					boolean prefVideoEnable = mPrefs.isVideoEnabled();
 					boolean prefInitiateWithVideo = mPrefs.shouldInitiateVideoCall();
-					android.util.Log.w("yf25", "放入 " + resource.get_id());
+					android.util.Log.w("yf25", "放入 " + resource.getOpID());
 					mResCache.put(-1L, resource);
 					CallManager.getInstance().inviteAddress(lAddress, prefVideoEnable && prefInitiateWithVideo, isLowBandwidthConnection);
 				} else {
@@ -900,10 +908,11 @@ public class LinphoneManager implements LinphoneCoreListener {
 	
 	private MinMaxPriorityQueue<ShareRtpAv> mHolder = MinMaxPriorityQueue.maximumSize(100).<ShareRtpAv>create();
     
-	CloudPlay mCloudPlay;
+//	CloudPlay mCloudPlay;
 	public void textReceived(LinphoneCore lc, LinphoneChatRoom cr, LinphoneAddress from, String message) {
 		if (lc.getCurrentCall() != null) {
-		android.util.Log.wtf("chatroom", "call id = " + lc.getCurrentCall().getCallLog().getCallId());
+			
+//		android.util.Log.wtf("chatroom", "call id = " + lc.getCurrentCall().getCallLog().getCallId());
 		} 
 		android.util.Log.wtf("chatroom", "from = " + from.getUserName() + " " + message);
 		//FIXME
@@ -912,25 +921,74 @@ public class LinphoneManager implements LinphoneCoreListener {
 			ShareRtpAv share_av = om.readValue(message, ShareRtpAv.class);
 			switch(share_av.getStep()) {
 				case open:
-					for (OpenListener open : mCloudPlay.getOpenListener()) {
-						open.onOpen();
-					}
-//					int i = 0;
-//					if (i < 1) {
-//					Resource res = Resource.of(1, "88888", "SELF", "52館攝影機69", "video", "Share Content", 42, 24, 22, 44, System.currentTimeMillis() - 10000, System.currentTimeMillis());
-//					play(res);
-//					i++;
+					android.util.Log.wtf("chatroom", "open...");
+//					for (OpenListener open : mCloudPlay.getOpenListener()) {
+//						open.onOpen();
 //					}
+					Module.setCData(share_av.getCdata());
+					android.util.Log.wtf("cdata", share_av.getCdata().lookup("url").toString());
+					int i = 0;
+					if (i < 1) {
+					
+						OPInfo res = OPInfo.of("1", share_av.getCdata().lookup("url").toString().substring(4, 9), "SELF", "52館攝影機69", "video", "Share Content", 42L, "24", 22L, 44L, System.currentTimeMillis() - 10000, System.currentTimeMillis());
+					
+						play(res);
+					i++;
+					}
 					break;
 				case inquire:
-					for (FindListener find : mCloudPlay.getFindListener()) {
-						find.onFind();
+//					for (FindListener find : mCloudPlay.getFindListener()) {
+//						find.onFind();
+//					}
+						android.util.Log.wtf("chatroom",  "inquire =  " + message);
+						Module.setCData(share_av.getCdata());
+						LinphoneChatRoom room = LinphoneManager.getLc().getOrCreateChatRoom("sip:cloudplay@61.221.50.9:5168");
+//						Injector injector = Guice.createInjector(new Module());
+//				        Operations factory = injector.getInstance(Operations.class);
+				        ShareRtpAv share_av2 = factory.rtpAv(SHARE_RTPAV.answer, Module.getCData(), share_av.getScene());
+				        share_av2.receivers("10d");
+				        share_av2.setCdata(share_av.getCdata());
+				        ObjectMapper om2 = new ObjectProvider().getContext(this.getClass());
+				        try {
+				        	String msg = om2.writeValueAsString(share_av2);
+				        	room.sendMessage(msg);
+				        } catch (Exception e) {
+				        	e.printStackTrace();
+				        }
+		
+			
+
+					break;
+				case join:
+					
+//					App.makeToast("有新訊息");
+					android.util.Log.wtf("chatroom", mCloudPlay +  " " + CloudPlay2 + "join listener size = " + CloudPlay2.getJoinListener().size());
+					for (JoinListener join : CloudPlay2.getJoinListener()) {
+						android.util.Log.wtf("chatroom", "呼叫 onJoin() ");
+						join.onJoin();
 					}
 					
-//					LinphoneChatRoom room = LinphoneManager.getLc().getOrCreateChatRoom("sip:cloudplay@140.96.116.226");
-//					Injector injector = Guice.createInjector(new Module());
-//			        Operations factory = injector.getInstance(Operations.class);
-//			        ShareRtpAv share_av2 = factory.rtpAv(SHARE_RTPAV.answer, new CData());
+						
+//					int k = 0;
+//					if (k < 1) {
+//						LinphoneChatRoom room2 = LinphoneManager.getLc().getOrCreateChatRoom("sip:cloudplay@61.221.50.9:5168");
+//						Injector injector2 = Guice.createInjector(new Module());
+//				        Operations factory2 = injector2.getInstance(Operations.class);
+//				        ShareRtpAv share_av3 = factory2.rtpAv(SHARE_RTPAV.answer, Module.getCData(), share_av.getScene());
+//				        share_av3.receivers("10d");
+//				        ObjectMapper om3 = new ObjectProvider().getContext(this.getClass());
+//				        try {
+//				        	String msg = om3.writeValueAsString(share_av3);
+//				        	room2.sendMessage(msg);
+//				        } catch (Exception e) {
+//				        	e.printStackTrace();
+//				        }
+//						k++;
+//					}
+//					LinphoneChatRoom room2 = LinphoneManager.getLc().getOrCreateChatRoom("sip:cloudplay@140.96.116.226");
+//					Injector injector2 = Guice.createInjector(new Module());
+//			        Operations factory2 = injector2.getInstance(Operations.class);
+//			        ShareRtpAv share_av2 = factory2.rtpAv(SHARE_RTPAV.answer, new CData(), share_av.getScene());
 //			        share_av2.receivers("10d");
 //			        ObjectMapper om2 = new ObjectProvider().getContext(this.getClass());
 //			        try {
@@ -939,13 +997,6 @@ public class LinphoneManager implements LinphoneCoreListener {
 //			        } catch (Exception e) {
 //			        	e.printStackTrace();
 //			        }
-					break;
-				case join:
-					
-					for (JoinListener join : mCloudPlay.getJoinListener()) {
-						join.onJoin();
-					}
-					
 //					Http http = mHttp.get();
 //					//http.listOPInfos(0L, 100L);
 //					android.util.Log.w("chatroom", "可以播了");
@@ -956,6 +1007,7 @@ public class LinphoneManager implements LinphoneCoreListener {
 		}
 		//deprecated
 	}
+	
 
 	@Override
 	public void dtmfReceived(LinphoneCore lc, LinphoneCall call, int dtmf) {
@@ -971,37 +1023,36 @@ public class LinphoneManager implements LinphoneCoreListener {
 	
 	@Override
 	public void messageReceived(LinphoneCore lc, LinphoneChatRoom cr, LinphoneChatMessage message) {
-		android.util.Log.wtf("chatroom", message.getText());
-		
-		
-		
-		if (mServiceContext.getResources().getBoolean(R.bool.disable_chat)) {
-			return;
-		}
-		
-		LinphoneAddress from = message.getFrom();
+//		android.util.Log.wtf("chatroom", message.getText());
+//		
+//		if (mServiceContext.getResources().getBoolean(R.bool.disable_chat)) {
+//			return;
+//		}
+//		
+//		LinphoneAddress from = message.getFrom();
+//
+//		String textMessage = message.getText();
+//		String url = message.getExternalBodyUrl();
+//		int id = -1;
+//		if (textMessage != null && textMessage.length() > 0) {
+//			id = ChatStorage.getInstance().saveTextMessage(from.asStringUriOnly(), "", textMessage, message.getTime());
+//		} else if (url != null && url.length() > 0) {
+//			//Bitmap bm = ChatFragment.downloadImage(url);
+//			id = ChatStorage.getInstance().saveImageMessage(from.asStringUriOnly(), "", null, message.getExternalBodyUrl(), message.getTime());
+//		}
+//		
+//		try {
+//			LinphoneUtils.findUriPictureOfContactAndSetDisplayName(from, mServiceContext.getContentResolver());
+//			if (!mServiceContext.getResources().getBoolean(R.bool.disable_chat__message_notification)) {
+//				LinphoneService.instance().displayMessageNotification(from.asStringUriOnly(), from.getDisplayName(), textMessage);
+//			}
+//		} catch (Exception e) { }
 
-		String textMessage = message.getText();
-		String url = message.getExternalBodyUrl();
-		int id = -1;
-		if (textMessage != null && textMessage.length() > 0) {
-			id = ChatStorage.getInstance().saveTextMessage(from.asStringUriOnly(), "", textMessage, message.getTime());
-		} else if (url != null && url.length() > 0) {
-			//Bitmap bm = ChatFragment.downloadImage(url);
-			id = ChatStorage.getInstance().saveImageMessage(from.asStringUriOnly(), "", null, message.getExternalBodyUrl(), message.getTime());
-		}
-		
-		try {
-			LinphoneUtils.findUriPictureOfContactAndSetDisplayName(from, mServiceContext.getContentResolver());
-			if (!mServiceContext.getResources().getBoolean(R.bool.disable_chat__message_notification)) {
-				LinphoneService.instance().displayMessageNotification(from.asStringUriOnly(), from.getDisplayName(), textMessage);
-			}
-		} catch (Exception e) { }
-
-		for (LinphoneSimpleListener listener : getSimpleListeners(LinphoneOnMessageReceivedListener.class)) {
-			
-			((LinphoneOnMessageReceivedListener) listener).onMessageReceived(from, message, id);
-		}
+		//TODO YFLin 先不觸發聊天室訊息
+//		for (LinphoneSimpleListener listener : getSimpleListeners(LinphoneOnMessageReceivedListener.class)) {
+//			
+//			((LinphoneOnMessageReceivedListener) listener).onMessageReceived(from, message, id);
+//		}
 	}
 
 	public String getLastLcStatusMessage() {
@@ -1135,7 +1186,7 @@ public class LinphoneManager implements LinphoneCoreListener {
 		}
 
 		if (state == State.OutgoingInit) {
-			Resource res = mResCache.getIfPresent(-1L);
+			OPInfo res = mResCache.getIfPresent(-1L);
 			android.util.Log.w("yf25", call.getCallLog().getTimestamp() + " call id " + res);
 			mResCache.put(call.getCallLog().getTimestamp(), res);
 		}
@@ -1477,7 +1528,7 @@ public class LinphoneManager implements LinphoneCoreListener {
 		}
 
 		@Override
-		public void onResourceStateChanged(LinphoneCall call, State state, Resource resoure, String message) {
+		public void onResourceStateChanged(LinphoneCall call, State state, OPInfo info, String message) {
 			if (state == State.OutgoingInit || state == State.IncomingReceived) {
 				boolean sendCamera = mLc.getConferenceSize() == 0;
 				enableCamera(call, sendCamera);
@@ -1498,7 +1549,7 @@ public class LinphoneManager implements LinphoneCoreListener {
 			
 			for (OnResourceStateChangedListener l : getSimpleListeners(OnResourceStateChangedListener.class)) {
 				try {
-					l.onResourceStateChanged(call, state, resoure, message);
+					l.onResourceStateChanged(call, state, info, message);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

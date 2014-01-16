@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 
 import lombok.SneakyThrows;
 
@@ -12,7 +13,7 @@ import org.itri.icl.x300.op2ca.adapter.FunctionAdapter;
 import org.itri.icl.x300.op2ca.db.OpDB;
 import org.itri.icl.x300.op2ca.utils.CloudPlay;
 import org.itri.icl.x300.op2ca.utils.OrmLiteRoboFragment;
-import org.itri.icl.x300.op2ca.utils.WebAsyncTaskLoader;
+import org.itri.icl.x300.op2ca.utils.WebTaskLoader;
 import org.itri.icl.x300.op2ca.webdas.Main;
 
 import com.google.common.base.Optional;
@@ -53,7 +54,7 @@ public class MgmtDevice extends OrmLiteRoboFragment<OpDB> implements OnGroupExpa
 	TextView mTextTitle;
 	TabWidget mTabWidget;
 	ImageButton mBtnStop, mBtnBack, mBtnSort;
-	@Inject CloudPlay mCloudPlay;
+	@Inject Provider<CloudPlay> mCloudPlay;
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup c, Bundle state) {
 		mBtnDelt = (ToggleButton)((Main)getActivity()).getButtonToggle();
@@ -114,9 +115,9 @@ public class MgmtDevice extends OrmLiteRoboFragment<OpDB> implements OnGroupExpa
 	@Override
 	public Loader<List<Resource>> onCreateLoader(int arg0, Bundle arg1) {
 //		if (arg0 == 0) {
-			return new WebAsyncTaskLoader<List<Resource>>(getActivity()) {
+			return new WebTaskLoader<List<Resource>>(getActivity()) {
 				public List<Resource> loadInBackground() {
-					Optional<List<Resource>> opt = mCloudPlay.listResources();
+					Optional<List<Resource>> opt = mCloudPlay.get().listResources();
 					return opt.isPresent() ? opt.get() : new ArrayList<Resource>();
 				}
 			};

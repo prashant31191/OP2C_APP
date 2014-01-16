@@ -20,6 +20,13 @@ import com.google.common.collect.Sets;
 import data.Contacts.Contact;
 
 public class App extends Application {
+	
+	
+	
+	public static final int NO_REGISTER = 100;
+	
+	public static final int LOAD_DB = 0;
+	public static final int LOAD_WEB = 1;
 	private static Context context;
 	Set<Contact> mCacheFriends = Sets.newHashSet();
 	private static Cache<String, String> mNameCache = CacheBuilder.newBuilder()

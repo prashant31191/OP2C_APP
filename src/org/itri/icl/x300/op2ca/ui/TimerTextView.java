@@ -43,4 +43,8 @@ public class TimerTextView extends TextView {
 			
 		});
 	}
+	
+	public void pause() {
+		mTimer.cancel();
+	}
 }

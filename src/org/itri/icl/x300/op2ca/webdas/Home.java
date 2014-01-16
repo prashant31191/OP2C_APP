@@ -1,20 +1,28 @@
 package org.itri.icl.x300.op2ca.webdas;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
+import java.util.concurrent.Future;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 
 import lombok.SneakyThrows;
 import lombok.extern.java.Log;
 
 import org.itri.icl.x300.op2ca.App;
+import org.itri.icl.x300.op2ca.Module;
 import org.itri.icl.x300.op2ca.R;
 import org.itri.icl.x300.op2ca.adapter.ShareAdapter;
-import org.itri.icl.x300.op2ca.data.Resource;
+import org.itri.icl.x300.op2ca.data.ResourceV1;
 import org.itri.icl.x300.op2ca.db.OpDB;
 import org.itri.icl.x300.op2ca.dialog.YesNoDialog;
+import org.itri.icl.x300.op2ca.utils.CloudPlay;
+import org.itri.icl.x300.op2ca.utils.CloudPlay.JoinListener;
 import org.itri.icl.x300.op2ca.utils.OnCriteriaChangeListener;
 import org.itri.icl.x300.op2ca.utils.OrmLiteRoboFragment;
+import org.itri.icl.x300.op2ca.utils.WebTaskLoader;
 import org.linphone.InCallActivity;
 import org.linphone.IncomingCallActivity;
 import org.linphone.KeepAliveHandler;
@@ -32,6 +40,7 @@ import org.linphone.core.LinphoneCall.State;
 import org.linphone.core.LinphoneCore;
 import org.linphone.mediastream.video.AndroidVideoWindowImpl;
 import org.linphone.mediastream.video.AndroidVideoWindowImpl.VideoDisplayListener;
+import org.linphone.mediastream.video.AndroidVideoWindowImpl.VideoWindowListener;
 import org.linphone.mediastream.video.display.GL2JNIView;
 import org.linphone.ui.AddressText;
 
@@ -72,19 +81,28 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
+import com.google.common.base.Optional;
 import com.j256.ormlite.android.extras.OrmliteListLoader;
 import com.j256.ormlite.stmt.PreparedQuery;
 import com.j256.ormlite.stmt.QueryBuilder;
+import com.sun.jersey.api.client.GenericType;
+import com.sun.jersey.api.client.async.ITypeListener;
+import com.sun.jersey.api.client.async.TypeListener;
+
+import data.OPInfos.OPInfo;
+import data.Resources.Resource;
 
 
 @Log
-public class Home extends OrmLiteRoboFragment<OpDB> implements LoaderCallbacks<List<Resource>>, OnCriteriaChangeListener, OnCheckedChangeListener, OnClickListener, OnItemClickListener, VideoDisplayListener, LinphoneOnCallStateChangedListener {
+public class Home extends OrmLiteRoboFragment<OpDB> implements JoinListener, LoaderCallbacks<List<OPInfo>>, OnCriteriaChangeListener, OnCheckedChangeListener, OnClickListener, OnItemClickListener, VideoWindowListener, LinphoneOnCallStateChangedListener {
 	@InjectView(R.id.listView) ListView mListView;
 	@InjectView(R.id.textEmpty) TextView mTextEmpty;
 	@InjectView(R.id.progEmpty) ProgressBar mProgEmpty;
 	@InjectView(R.id.listEmpty) LinearLayout mListEmpty;
 	@InjectView(R.id.lytVideo) RelativeLayout mVideoPanel;
 	@InjectView(R.id.viewVideo) GLSurfaceView mVideoView;
+	
+	@InjectView(R.id.prevVideo) SurfaceView mViewPre;
 	@InjectView(R.id.btnTalk) Button mBtnTalk;
 	@InjectView(R.id.btnClose) Button mBtnClose;
 	@InjectView(R.id.txtMesg) TextView mtxtMesg;
@@ -96,8 +114,10 @@ public class Home extends OrmLiteRoboFragment<OpDB> implements LoaderCallbacks<L
 	TextView mTextTitle;
 	AndroidVideoWindowImpl mVideoDisplayWindow;
 	
-	Resource mResource;
+	ResourceV1 mResource;
+	@Inject Provider<CloudPlay> mCloudPlay;
 	@Inject AlarmManager mAlarmMgr;
+	
 	@Override 
     public View onCreateView(LayoutInflater inflater, ViewGroup c, Bundle state) {
 		mBtnDelt = (ToggleButton)((Main)getActivity()).getButtonToggle();
@@ -114,6 +134,8 @@ public class Home extends OrmLiteRoboFragment<OpDB> implements LoaderCallbacks<L
 		mTextTitle.setText("我的資源清單");
 		mBtnDelt.setChecked(false);
 		mBtnDelt.setOnCheckedChangeListener(this);
+		mCloudPlay.get().addJoinListener(this);
+		android.util.Log.e("chatroom",mCloudPlay + " " + mCloudPlay.get() + "join 2 listener size = " + mCloudPlay.get().getJoinListener().size());
 //		mBtnSort.setOnItemSelectedListener(this);
 //		mBtnSort.setSelection(0);
 		LinphoneManager.addListener(this);
@@ -149,17 +171,33 @@ public class Home extends OrmLiteRoboFragment<OpDB> implements LoaderCallbacks<L
 		mListView.setAdapter(mAdapter);
 		mListView.setOnItemClickListener(this);
 		mBtnClose.setOnClickListener(this);
-		
 		mBtnTalk.setOnClickListener(this);
-		
-		mVideoDisplayWindow = new AndroidVideoWindowImpl(mVideoView, null);
+		mVideoDisplayWindow = new AndroidVideoWindowImpl(mVideoView, mViewPre);
 		mVideoDisplayWindow.setListener(this);
 		mVideoDisplayWindow.init();
-        getLoaderManager().initLoader(0, new Bundle(), this);
+		mVideoPanel.setVisibility(LinphoneManager.getLc().isIncall() ? View.VISIBLE : View.GONE);
+		//先秀出目前DB的資料，然後馬上呼叫webapi, 
+		mCloudPlay.get().asyncListOPInfo(new TypeListener<List<OPInfo>>(new GenericType<List<OPInfo>>(){}) {
+			@Override
+			public void onComplete(Future<List<OPInfo>> arg0)
+					throws InterruptedException {
+				try{
+					log.warning("info size = " + arg0.get().size());
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		}, 0L, 100L);
+		//getLoaderManager().initLoader(0, new Bundle(), this);
+        getLoaderManager().initLoader(1, new Bundle(), this);
 	}
+	
+	
+	
+	//讀取硬碟列表 與 過濾
 	@Override @SneakyThrows
-	public Loader<List<Resource>> onCreateLoader(int arg0, Bundle bundle) {
-		QueryBuilder<Resource, Long> queryBuilder = getHelper().resDao().queryBuilder();
+	public Loader<List<OPInfo>> onCreateLoader(int arg0, Bundle bundle) {
+		QueryBuilder<OPInfo, String> queryBuilder = getHelper().infoDao().queryBuilder();
 		switch (bundle.getInt("order", 0)) {
 		case 1:
 			queryBuilder.orderBy("createTime", false);break;
@@ -168,18 +206,18 @@ public class Home extends OrmLiteRoboFragment<OpDB> implements LoaderCallbacks<L
 		default:
 			queryBuilder.orderBy("expireTime", false);break;
 		}
-		PreparedQuery<Resource> preparedQuery = queryBuilder.prepare();
-		return new OrmliteListLoader<Resource, Long>(getActivity(), getHelper().resDao(), preparedQuery);
+		PreparedQuery<OPInfo> preparedQuery = queryBuilder.prepare();
+		return new OrmliteListLoader<OPInfo, String>(getActivity(), getHelper().infoDao(), preparedQuery);
 	}
 
 	@Override
-	public void onLoadFinished(Loader<List<Resource>> arg0, List<Resource> res) {
+	public void onLoadFinished(Loader<List<OPInfo>> arg0, List<OPInfo> info) {
 		mAdapter.clear();
-		mAdapter.addAll(res);
+		mAdapter.addAll(info);
 	}
 
 	@Override
-	public void onLoaderReset(Loader<List<Resource>> arg0) {}
+	public void onLoaderReset(Loader<List<OPInfo>> arg0) {}
 
 	@Override
 	public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -190,7 +228,7 @@ public class Home extends OrmLiteRoboFragment<OpDB> implements LoaderCallbacks<L
 	@Override
 	public void onClick(View v) {
 		if (v == mBtnTalk) {
-			
+			App.makeToast("敬請期待");
 		} else if (v == mBtnClose) {
 			mVideoPanel.setVisibility(View.GONE);
 			hangUp();
@@ -200,34 +238,18 @@ public class Home extends OrmLiteRoboFragment<OpDB> implements LoaderCallbacks<L
 	@Override
 	public void onItemClick(AdapterView<?> arg0, View arg1, int pos, long arg3) {
 		//hangUp();//先將目前通話掛斷
-		
 //		YesNoDialog mYesNoDialog = new YesNoDialog();
 //		mYesNoDialog.show(getChildFragmentManager(), "yesNo");
-		
 		//TODO
 		startOrientationSensor();
 		//answer();
-		
-		
 		//TODO
-		Resource res = (Resource) arg0.getItemAtPosition(pos);
-		res.setSender("88888");
+		OPInfo res = (OPInfo) arg0.getItemAtPosition(pos);
+		String _88888 = Module.getCData().lookup("url").toString().substring(4, 9);
+		log.warning("cdata = " + _88888);
+		res.setSenderID(_88888);
 		LinphoneManager.getInstance().newOutgoingPlay(res);
-		
-		
-//		res.setSender("0000909111055");
-//		res.setSender("10d");
-		
-		
-//		AddressType address2 = new AddressText(getActivity(), null);
-//		address2.setDisplayedName("88888");
-//		address2.setText("88888");
-//		LinphoneManager.getInstance().newOutgoingCall(address2);
 		mListView.smoothScrollToPositionFromTop(pos, 0);
-		
-		
-		
-//		LinphoneManager.getInstance().routeAudioToSpeaker();
 	}
 	
 	/* VideoWindowListener */
@@ -264,10 +286,6 @@ public class Home extends OrmLiteRoboFragment<OpDB> implements LoaderCallbacks<L
 	public void onPause() {	
 		if (mVideoDisplayWindow != null) {
 			synchronized (mVideoDisplayWindow) {
-				/*
-				 * this call will destroy native opengl renderer which is used by
-				 * androidVideoWindowImpl
-				 */
 				log.warning("停止...");
 				LinphoneManager.getLc().setVideoWindow(null);
 			}
@@ -334,6 +352,8 @@ public class Home extends OrmLiteRoboFragment<OpDB> implements LoaderCallbacks<L
 			}
 		}
 	}
+	
+	boolean mVideoWidnow = false;
 	OrientationEventListener mOrientationHelper;
 	private synchronized void startOrientationSensor() {
 		if (mOrientationHelper == null) {
@@ -348,9 +368,19 @@ public class Home extends OrmLiteRoboFragment<OpDB> implements LoaderCallbacks<L
 			new Handler(Looper.getMainLooper()).post(new Runnable() {
 	            public void run() { 
 	            	mVideoPanel.setVisibility(View.VISIBLE);
+	            	
+	            	final LinphoneCallParams remoteParams = mCall.getRemoteParams();
+	    			if (remoteParams != null && remoteParams.getVideoEnabled() && LinphonePreferences.instance().shouldAutomaticallyAcceptVideoRequests()) {
+	    				mVideoDisplayWindow.requestRender();
+	    			} else {
+	    				mVideoDisplayWindow.requestRender();
+	    			}
 	            }});
+			
+			
 //			startActivity(new Intent(getActivity(), IncomingCallActivity.class));
 		} else if (state == State.StreamsRunning) {
+			
 			new Handler(Looper.getMainLooper()).post(new Runnable() {
 	            public void run() { 
 	            	mVideoPanel.setVisibility(View.VISIBLE);
@@ -359,10 +389,25 @@ public class Home extends OrmLiteRoboFragment<OpDB> implements LoaderCallbacks<L
 			log.warning("撥出前... " + message + " "+ call.getCurrentParamsCopy().getVideoEnabled());
 		} else if (state == State.OutgoingInit) {
 			log.warning("撥出... " + message + " " + call.getCurrentParamsCopy().getVideoEnabled());
-//			startOrientationSensor();
-//			LinphoneManager.getInstance().routeAudioToSpeaker();
+			startOrientationSensor();
+			LinphoneManager.getInstance().routeAudioToSpeaker();
+			
+//			new Handler(Looper.getMainLooper()).post(new Runnable() {
+//			@Override
+//			public void run() {
+//			final LinphoneCallParams remoteParams = mCall.getRemoteParams();
+//			if (remoteParams != null && remoteParams.getVideoEnabled() && LinphonePreferences.instance().shouldAutomaticallyAcceptVideoRequests()) {
+//				//LinphoneActivity.instance().startVideoActivity(mCall);
+//				mVideoDisplayWindow.requestRender();
+//			} else {
+//				mVideoDisplayWindow.requestRender();
+//				//LinphoneActivity.instance().startIncallActivity(mCall);
+//			}
+//			
+//			}
+//		});
 //			log.warning("cid = " + call.getVideoStats());
-//			LinphoneManager.getInstance().addVideo();
+			//LinphoneManager.getInstance().addVideo();
 ////			new Handler(Looper.getMainLooper()).post(new Runnable() {
 ////				@Override
 ////				public void run() {
@@ -403,6 +448,7 @@ public class Home extends OrmLiteRoboFragment<OpDB> implements LoaderCallbacks<L
 	            public void run() { 
 	            	mVideoPanel.setVisibility(View.GONE);
 	            }});
+			mVideoWidnow = false;
 			// Convert LinphoneCore message for internalization
 			if (message != null && message.equals("Call declined.")) { 
 				log.warning(getString(R.string.error_call_declined));
@@ -436,54 +482,34 @@ public class Home extends OrmLiteRoboFragment<OpDB> implements LoaderCallbacks<L
 	}
 	
 	LinphoneCall mCall;
-	private void answer() {
-		log.warning("answer...");
-		if (LinphoneManager.getLcIfManagerNotDestroyedOrNull() != null) {
-			List<LinphoneCall> calls = LinphoneUtils.getLinphoneCalls(LinphoneManager.getLc());
-			for (LinphoneCall call : calls) {
-				log.warning("answer0..." + mCall);
-				if (State.IncomingReceived == call.getState()) {
-					mCall = call;
-					log.warning("answer..." + mCall);
-					
-					break;
-				}
-			}
-		}
-		if (mCall == null) {
-			log.severe("Couldn't find incoming call");
-//			finish();
-			return;
-		}
-		LinphoneCallParams params = LinphoneManager.getLc().createDefaultCallParameters();
-		if (mCall != null && mCall.getRemoteParams() != null && mCall.getRemoteParams().getVideoEnabled() && LinphonePreferences.instance().shouldAutomaticallyAcceptVideoRequests()) {
-			params.setVideoEnabled(true);
-			log.severe("answer  true");
-		} else {
-			log.severe("answer  false");
-			params.setVideoEnabled(false);
-		}
-		log.severe("answer  mgr1");
-		LinphoneManager mgr = LinphoneManager.getInstance();
-		log.severe("answer  mgr2" + mgr);
-		if (!mgr.acceptCallWithParams(mCall, params)) {
-			log.warning("answer...acceptCallWithParams();");
-			// the above method takes care of Samsung Galaxy S
-			App.makeToast(getString(R.string.couldnt_accept_call));
-		} else {
-			log.severe("answer  mgr3");
-			final LinphoneCallParams remoteParams = mCall.getRemoteParams();
-			if (remoteParams != null && remoteParams.getVideoEnabled() && LinphonePreferences.instance().shouldAutomaticallyAcceptVideoRequests()) {
-				//LinphoneActivity.instance().startVideoActivity(mCall);
-				mVideoDisplayWindow.requestRender();
-			} else {
-				mVideoDisplayWindow.requestRender();
-				//LinphoneActivity.instance().startIncallActivity(mCall);
-			}
-		}
-	}
 	
 	private void decline() {
 		LinphoneManager.getLc().terminateCall(mCall);
 	}
+	@Override
+	public void onVideoPreviewSurfaceDestroyed(AndroidVideoWindowImpl vw) {
+		LinphoneManager.getLc().setPreviewWindow(null);		
+	}
+	@Override
+	public void onVideoPreviewSurfaceReady(AndroidVideoWindowImpl vw, SurfaceView surface) {
+		mViewPre = surface;
+		LinphoneManager.getLc().setPreviewWindow(mViewPre);
+	}
+
+	@Override
+	public void onJoin() {
+		log.warning("join add");
+		final OPInfo op = OPInfo.of(UUID.randomUUID().toString(), "0000909111069", "SELF", "52館攝影機69", "video", "New Share Content", 0L, "0", 0L, 0L, System.currentTimeMillis() - 10000, System.currentTimeMillis());
+		try {
+			getHelper().infoDao().createIfNotExists(op);
+		} catch (Exception e) {
+			
+		}
+		
+		new Handler(Looper.getMainLooper()).post(new Runnable() {
+            public void run() { 
+            	getLoaderManager().restartLoader(1, new Bundle(), Home.this);
+            }});
+		}
+//	}
 }

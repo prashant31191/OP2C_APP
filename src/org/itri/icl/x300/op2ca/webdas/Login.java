@@ -15,6 +15,7 @@ import org.linphone.core.LinphoneCoreException;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -43,7 +44,7 @@ public class Login extends RoboFragmentActivity implements OnClickListener, Text
 	@Override
 	public void onClick(View v) {
 		
-		LinphoneManager.getLc().setDeviceRotation(270);
+		LinphoneManager.getLc().setDeviceRotation(270); //TODO
 		LinphonePreferences mNewPrefs = LinphonePreferences.instance();
 		LinphoneCore lc = LinphoneManager.getLc();
 		lc.clearProxyConfigs();
@@ -73,12 +74,21 @@ public class Login extends RoboFragmentActivity implements OnClickListener, Text
 		lc.setUploadBandwidth(0);
 		lc.setDownloadBandwidth(0);
 		if (mNewPrefs.getAccountCount() == 1) {
+			log.warning("設定正確");
+			setResult(Activity.RESULT_OK);
 			finish();
 		} else {
 			App.makeToast("設定有誤");
 		}
 	}
 
+	
+	@Override
+	public void onBackPressed() {
+		setResult(App.NO_REGISTER);
+		finish();
+		super.onBackPressed();
+	}
 	@Override
 	public void afterTextChanged(Editable s) {
 		String username = s.toString().trim();

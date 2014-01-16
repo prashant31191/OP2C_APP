@@ -2,6 +2,7 @@ package org.itri.icl.x300.op2ca.dialog;
 
 
 import org.itri.icl.x300.op2ca.R;
+import org.itri.icl.x300.op2ca.webdas.Main;
 
 import com.google.inject.Inject;
 import roboguice.fragment.RoboDialogFragment;
@@ -50,10 +51,11 @@ public class YesNoDialog extends RoboDialogFragment implements OnClickListener {
 	@Override
 	public void onClick(View v) {
 		if (v == mBtnYes) {
-			DeviceDialog mDeviceDialog = new DeviceDialog();
-			mDeviceDialog.show(mFM, "device");
-		} else {
-		}
+			
+			((Main)getActivity()).prev();
+			//DeviceDialog mDeviceDialog = new DeviceDialog();
+			//mDeviceDialog.show(mFM, "device");
+		} 
 		dismiss();
 	}
 }

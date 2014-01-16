@@ -9,12 +9,14 @@ import lombok.SneakyThrows;
 
 import org.itri.icl.x300.op2ca.App;
 import org.itri.icl.x300.op2ca.R;
-import org.itri.icl.x300.op2ca.data.Resource;
+import org.itri.icl.x300.op2ca.data.ResourceV1;
 import org.itri.icl.x300.op2ca.db.OpDB;
 import org.linphone.LinphoneManager;
 import org.linphone.LinphoneSimpleListener.OnResourceStateChangedListener;
 import org.linphone.core.LinphoneCall;
 import org.linphone.core.LinphoneCall.State;
+
+import data.OPInfos.OPInfo;
 
 import android.graphics.Color;
 import android.os.Handler;
@@ -28,10 +30,10 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-public class ShareAdapter extends ArrayAdapter<Resource> implements OnClickListener, OnResourceStateChangedListener {
+public class ShareAdapter extends ArrayAdapter<OPInfo> implements OnClickListener, OnResourceStateChangedListener {
 	Calendar mCale = Calendar.getInstance();
 	boolean editable = false;
-	Resource mResource;
+	OPInfo mResource;
 //	Dao<Resource, Long> mDao;
 	OpDB mOpDB;
 	SimpleDateFormat mFmt = new SimpleDateFormat("MM/dd, hh:mm");
@@ -52,7 +54,7 @@ public class ShareAdapter extends ArrayAdapter<Resource> implements OnClickListe
 	@Override
 	 public View getView(int position, View convertView, ViewGroup parent) {
 		View view = super.getView(position, convertView, parent);
-		Resource item = getItem(position);		
+		OPInfo item = getItem(position);		
 //		if (item.active()) {
 //			mResource = item;
 //		}
@@ -97,9 +99,9 @@ public class ShareAdapter extends ArrayAdapter<Resource> implements OnClickListe
 		imgLive.setImageResource(item.isRead()? R.drawable.webdas_live_org : R.drawable.webdas_live_red);
 		
 		TextView txtOwner = (TextView) view.findViewById(R.id.text_owner);
-		if (item.getState() == State.OutgoingProgress) {
+		if (item.getState() == State.OutgoingProgress.value()) {
 			txtOwner.setText("連線中");
-		} else if (item.getState() == State.StreamsRunning) {
+		} else if (item.getState() == State.StreamsRunning.value()) {
 			txtOwner.setText("播放中");
 		} else {
 			txtOwner.setText("");
@@ -114,13 +116,13 @@ public class ShareAdapter extends ArrayAdapter<Resource> implements OnClickListe
 
 	@Override @SneakyThrows
 	public void onClick(View v) {
-		Resource resource = (Resource)v.getTag();
-		if (mOpDB.resDao().delete(resource) > 0) 
-			remove(resource);
+		OPInfo info = (OPInfo)v.getTag();
+		if (mOpDB.infoDao().delete(info) > 0) 
+			remove(info);
 	}
 
 	@Override
-	public void onResourceStateChanged(LinphoneCall call, final State state, final Resource resoure, String message) {
+	public void onResourceStateChanged(LinphoneCall call, final State state, final OPInfo info, String message) {
 		new Handler(Looper.getMainLooper()).post(new Runnable() {
 			@Override
 			public void run() {
@@ -133,6 +135,6 @@ public class ShareAdapter extends ArrayAdapter<Resource> implements OnClickListe
 				}
 			}
 		});
-		resoure.setState(state);
+		info.setState(state.value());
 	}
 }

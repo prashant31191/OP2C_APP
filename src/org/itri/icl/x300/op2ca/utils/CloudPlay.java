@@ -2,8 +2,13 @@ package org.itri.icl.x300.op2ca.utils;
 
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.Future;
+
+import schema.element.CData;
 
 import com.google.common.base.Optional;
+import com.sun.jersey.api.client.GenericType;
+import com.sun.jersey.api.client.async.TypeListener;
 
 import data.Comments;
 import data.Contacts;
@@ -13,12 +18,12 @@ import data.Resources;
 
 public interface CloudPlay {
 
-	void start();
-	void open();
-	void ready();
-	void invite();
-	void answer();
-	void finish();
+	void start(String scene);
+	void open(String scene);
+	void ready(String scene);
+	void invite(String scene);
+	void answer(String scene);
+	void finish(String scene);
 	
 	void addOpenListener(OpenListener listener);
 	void addFindListener(FindListener listener);
@@ -29,7 +34,7 @@ public interface CloudPlay {
 	Set<JoinListener> getJoinListener();
 	
 	
-	
+	void setCData(CData cdata);
 	public static interface OpenListener {
 		void onOpen();
 	}
@@ -49,8 +54,10 @@ public interface CloudPlay {
 	Optional<List<Resources.Resource>> listResources();
 	Optional<List<Resources.Resource>> listResources(String type);
 	
-	void save();
+	void save(OPInfos.OPInfo opInfo);
 	
+	
+	Future<List<OPInfos.OPInfo>> asyncListOPInfo(TypeListener<List<OPInfos.OPInfo>> tl, Long startTime, Long afterN);
 	
 	
 	

@@ -7,7 +7,7 @@ import lombok.extern.java.Log;
 
 import org.itri.icl.x300.op2ca.R;
 import org.itri.icl.x300.op2ca.adapter.FunctionAdapter;
-import org.itri.icl.x300.op2ca.data.Function;
+import org.itri.icl.x300.op2ca.data.ext.ResourceArg;
 import org.itri.icl.x300.op2ca.db.OpDB;
 import org.itri.icl.x300.op2ca.utils.OrmLiteRoboFragment;
 import org.itri.icl.x300.op2ca.webdas.Main;
@@ -54,7 +54,7 @@ public class ShareTree extends OrmLiteRoboFragment<OpDB> implements OnGroupExpan
 	
 	public ShareTree(Bundle... bundle) {
 		if (bundle != null && !bundle[0].containsKey("device")) {
-			bundle[0].putParcelableArrayList("device", new ArrayList<Function>());
+			bundle[0].putParcelableArrayList("device", new ArrayList<ResourceArg>());
 		}
 		setArguments(bundle[0]);
 	}
@@ -87,8 +87,8 @@ public class ShareTree extends OrmLiteRoboFragment<OpDB> implements OnGroupExpan
 		mTreeView.setEmptyView(mListEmpty);
 		mTreeView.setOnChildClickListener(this);
 		
-		mAdapter = new FunctionAdapter(getHelper(), getArguments().<Function>getParcelableArrayList("device"));
-		mTreeView.setAdapter(mAdapter);
+//		mAdapter = new FunctionAdapter(getHelper(), getArguments().<ResourceArg>getParcelableArrayList("device"));
+//		mTreeView.setAdapter(mAdapter);
 		mTreeView.setOnGroupExpandListener(this);
 		mEditText.addTextChangedListener(this);
 		mTreeView.setTextFilterEnabled(true);
@@ -137,12 +137,13 @@ public class ShareTree extends OrmLiteRoboFragment<OpDB> implements OnGroupExpan
 		if (v == mBtnStop) {
 			((Main)getActivity()).prev();
 		} else if (v == mBtnReset) {
-			mAdapter.clearChecked();
+//			mAdapter.clearChecked();
 		} else if (v == mBtnConfirm) {
-			ArrayList<Function> checked = mAdapter.readChecked();
-			Bundle bundle = new Bundle();
-			bundle.putParcelableArrayList("device", checked);
-			((Main)getActivity()).prev(bundle);
+			//TODO
+			//List<FunctionArg> checked = mAdapter.readChecked();
+//			Bundle bundle = new Bundle();
+//			bundle.putParcelableArrayList("device", checked);
+//			((Main)getActivity()).prev(bundle);
 		}
 	}
 
@@ -160,7 +161,7 @@ public class ShareTree extends OrmLiteRoboFragment<OpDB> implements OnGroupExpan
 	@Override
 	public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
 		Cursor cursor = mAdapter.getChild(groupPosition, childPosition);
-		mAdapter.checkItem(cursor.getLong(cursor.getColumnIndex("_id")));
+//		mAdapter.checkItem(cursor.getLong(cursor.getColumnIndex("_id")));
 		mAdapter.notifyDataSetChanged();
 		return false;
 	}

@@ -1,6 +1,7 @@
 [net]
 download_bw=100000
 upload_bw=100000
+mtu=0
 
 [sip]
 contact=sip:unknown@unknown-host
@@ -10,6 +11,9 @@ keepalive_period=30000
 
 [video]
 size=qvga
+ 
+[rtp]
+nortp_timeout=60
 
 [app]
 sharing_server=https://www.linphone.org:444/upload.php

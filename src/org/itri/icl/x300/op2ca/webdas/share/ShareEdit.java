@@ -9,15 +9,20 @@ import lombok.extern.java.Log;
 
 import org.itri.icl.x300.op2ca.R;
 import org.itri.icl.x300.op2ca.adapter.ShareAdapter;
-import org.itri.icl.x300.op2ca.data.Device;
-import org.itri.icl.x300.op2ca.data.Function;
+import org.itri.icl.x300.op2ca.data.ext.CapabilityArg;
 import org.itri.icl.x300.op2ca.data.ext.ContactArg;
+import org.itri.icl.x300.op2ca.data.ext.ResourceArg;
 import org.itri.icl.x300.op2ca.db.OpDB;
+import org.itri.icl.x300.op2ca.dialog.YesNoDialog;
 import org.itri.icl.x300.op2ca.ui.FriendListView;
 import org.itri.icl.x300.op2ca.utils.OrmLiteRoboFragment;
 import org.itri.icl.x300.op2ca.webdas.Main;
+import org.linphone.LinphoneManager;
+
+import data.Resources.Resource;
 
 import roboguice.inject.InjectView;
+import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
@@ -37,7 +42,7 @@ import android.widget.TextView;
 import android.widget.ToggleButton;
 
 @Log
-public class ShareEdit extends OrmLiteRoboFragment<OpDB> implements LoaderCallbacks<List<Device>>, OnClickListener, TextWatcher {
+public class ShareEdit extends OrmLiteRoboFragment<OpDB> implements OnClickListener, TextWatcher {
 
 	@InjectView(R.id.btnEmoji) Button mNtnEmoji;
 	@InjectView(R.id.btnResource) Button mBtnDevice;
@@ -59,8 +64,8 @@ public class ShareEdit extends OrmLiteRoboFragment<OpDB> implements LoaderCallba
 	
 	public ShareEdit() {
 		Bundle bundle = new Bundle();
-		bundle.putParcelableArrayList("people", new ArrayList<ContactArg>());
-		bundle.putParcelableArrayList("device", new ArrayList<Function>());
+		bundle.putParcelableArrayList("people", new ArrayList<ContactArg>()); // 	people -> contact
+		bundle.putParcelableArrayList("device", new ArrayList<ResourceArg>()); // device -> resource
 		setArguments(bundle);
 		
 	}
@@ -99,11 +104,16 @@ public class ShareEdit extends OrmLiteRoboFragment<OpDB> implements LoaderCallba
 //		if (getArguments() != null && getArguments().containsKey("people")) {
 //			
 //		}
-		if (getArguments() != null && !getArguments().getParcelableArrayList("device").isEmpty()) {
+		if (getArguments() != null && !getArguments().<ResourceArg>getParcelableArrayList("device").isEmpty()) {
 			log.warning("create share Video");
-			mShareVideo =  new EmbeddedVideo(getArguments().<Device>getParcelableArrayList("device"),
-											 getArguments().<ContactArg>getParcelableArrayList("people")); //目前只有Video 先這樣寫
-			mMgr.beginTransaction().add(R.id.share_embedded, mShareVideo, "share").commit();
+			String scene = "local";
+			if(getArguments().<ResourceArg>getParcelableArrayList("device").get(0).getDisplayName().equals("我的手機"))
+				scene = "local";
+			else
+				scene = "remote";
+			mShareVideo =  new EmbeddedVideo(getArguments().<ResourceArg>getParcelableArrayList("device"),
+											 getArguments().<ContactArg>getParcelableArrayList("people"), scene, false); //目前只有Video 先這樣寫
+			mMgr.beginTransaction().add(R.id.share_embedded, mShareVideo, "embeddedPlayer").commit();
 		}
 		
 		mEditMsg.setEnabled(getArguments().getParcelableArrayList("device").isEmpty() ? false : true);
@@ -111,7 +121,6 @@ public class ShareEdit extends OrmLiteRoboFragment<OpDB> implements LoaderCallba
 		mEditMsg.setOnClickListener(this);
 		mEditMsg.addTextChangedListener(this);
 		mEditMsg.setText("");
-		getLoaderManager().initLoader(0, null, this);
 	}
 
 	@Override
@@ -120,34 +129,23 @@ public class ShareEdit extends OrmLiteRoboFragment<OpDB> implements LoaderCallba
 		if (mShareVideo != null) {
 			log.warning("刪除");
 			mMgr.beginTransaction().remove(mShareVideo).commit();
+			mShareVideo = null;
 		}
-	}
-	@Override
-	public Loader<List<Device>> onCreateLoader(int arg0, Bundle arg1) {
-//		mTextEmpty.setText(getString(R.string.title_mgmt_no_resource, "檔案"));
-		return null;
-	}
-
-	@Override
-	public void onLoadFinished(Loader<List<Device>> arg0, List<Device> res) {
-		if (res.isEmpty()) {
-//			mTextEmpty.setText(getString(R.string.title_mgmt_no_resource, "檔案"));
-		}
-	}
-
-	@Override
-	public void onLoaderReset(Loader<List<Device>> arg0) {
 	}
 
 	@Override
 	public void onClick(View v) {
 		if (v == mBtnBack) {
-			((Main)getActivity()).prev();
+			if (mMgr.findFragmentByTag("embeddedPlayer") != null) {
+				new YesNoDialog().show(mMgr, "YesNo");
+			} else {
+				((Main)getActivity()).prev();
+			}
 //			getHelper().clearChecked();
 		} else if (v == mBtnFriend) {
 			((Main)getActivity()).next(new ShareFriend(getArguments()));
 		} else if (v == mBtnDevice) {
-			((Main)getActivity()).next(new ShareDevice(getArguments()));
+			((Main)getActivity()).next(new ShareResource(getArguments()));
 		} else if (v == mEditMsg) {
 			mIMM.toggleSoftInput(0, InputMethodManager.SHOW_IMPLICIT);
 		} else if (v == mBtnSubmit) {
@@ -172,4 +170,6 @@ public class ShareEdit extends OrmLiteRoboFragment<OpDB> implements LoaderCallba
 	public void onTextChanged(CharSequence s, int start, int before, int count) {
 		
 	}
+	
+
 }
