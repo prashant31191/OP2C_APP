@@ -11,16 +11,20 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.ContactsContract.PhoneLookup;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Sets;
+import com.testflightapp.lib.TestFlight;
 
 import data.Contacts.Contact;
 
 public class App extends Application {
 	
+	
+	public static final String CloudPlay = "cloudplay";
 	
 	
 	public static final int NO_REGISTER = 100;
@@ -29,13 +33,14 @@ public class App extends Application {
 	public static final int LOAD_WEB = 1;
 	private static Context context;
 	Set<Contact> mCacheFriends = Sets.newHashSet();
-	private static Cache<String, String> mNameCache = CacheBuilder.newBuilder()
-			.expireAfterWrite(60, TimeUnit.MINUTES)
+	private static Cache<String, String> mNameCache = CacheBuilder
+			.newBuilder().expireAfterWrite(60, TimeUnit.MINUTES)
 			.build();
 	public void onCreate() {
 		super.onCreate();
-		RoboGuice.setBaseApplicationInjector(this, RoboGuice.DEFAULT_STAGE,
-				RoboGuice.newDefaultRoboModule(this), new Module());
+		TestFlight.takeOff(this, "8e7b2779-fc18-4fcc-961a-233ce53c9374");
+		RoboGuice.setBaseApplicationInjector(this, RoboGuice.DEFAULT_STAGE, new Module(), RoboGuice.newDefaultRoboModule(this));
+//		RoboGuice.setBaseApplicationInjector(this, RoboGuice.DEFAULT_STAGE, new Module());
 		context = getApplicationContext();
 	}
 

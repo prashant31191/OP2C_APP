@@ -16,7 +16,6 @@ import lombok.extern.java.Log;
 
 import org.itri.icl.x300.op2ca.App;
 import org.itri.icl.x300.op2ca.R;
-import org.itri.icl.x300.op2ca.data.ext.ContactArg;
 import org.itri.icl.x300.op2ca.db.OpDB;
 
 import com.google.common.base.Function;
@@ -41,16 +40,16 @@ public class FriendAdapter extends ArrayAdapter<Contact> {
 	OpDB mOpDB;
 	private Set<Contact> mChecked = Sets.newHashSet();
 	private Set<Contact> mOrginal = Sets.newHashSet();
-	public FriendAdapter(OpDB opDB, ArrayList<ContactArg> checked) {
+	public FriendAdapter(OpDB opDB, ArrayList<Contact> checked) {
 		super(App.getCtx(), R.layout.op2c_item_contact, R.id.text1, opDB.contacts());
-		Collection<Contact> transed = Collections2.transform(checked, new Function<ContactArg, Contact>() {
-			@Override
-			public Contact apply(ContactArg arg0) {
-				return Contact.of(arg0.getUserID(), arg0.getDisplayName(), arg0.getLookuoKey());
-			}
-		});
-		mChecked.addAll(transed);
-		mOrginal.addAll(transed);
+//		Collection<Contact> transed = Collections2.transform(checked, new Function<ContactArg, Contact>() {
+//			@Override
+//			public Contact apply(ContactArg arg0) {
+//				return Contact.of(arg0.getUserID(), arg0.getDisplayName(), arg0.getLookuoKey(), System.currentTimeMillis());
+//			}
+//		});
+		mChecked.addAll(checked);
+		mOrginal.addAll(checked);
 	}
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
@@ -63,7 +62,7 @@ public class FriendAdapter extends ArrayAdapter<Contact> {
 		group.setChecked(mChecked.contains(phone) ? true : false);
 		number.setText(phone.getUserID() + "@domain.org");
 //		People people = phone.getPeople();
-		String contactId = phone.getLookupKey();
+		String contactId = phone.getId();
 		Uri contactUri = withAppendedPath(CONTENT_LOOKUP_URI, contactId);
 		InputStream photoIs = openContactPhotoInputStream(App.getCtx().getContentResolver(), contactUri);
 		photoView.setImageBitmap(photoIs != null ? decodeStream(photoIs) : decodeResource(App.getCtx().getResources(), R.drawable.webdas_person01_picture_2x));
@@ -85,12 +84,13 @@ public class FriendAdapter extends ArrayAdapter<Contact> {
 		notifyDataSetChanged();
 	}
 	
-	public ArrayList<ContactArg> readChecked() {
-		ArrayList<ContactArg> checked = Lists.newArrayList();
+	public ArrayList<Contact> readChecked() {
+		ArrayList<Contact> checked = Lists.newArrayList();
 		for(int i = 0; i < getCount(); i++) {
 			Contact phone = getItem(i);
 			if (mChecked.contains(phone)) {
-				checked.add(new ContactArg(phone.getUserID(), phone.getDisplayName(), phone.getLookupKey()));
+				checked.add(phone);
+//				checked.add(new ContactArg(phone.getUserID(), phone.getDisplayName(), phone.getId()));
 			}
 		}
 		return checked;

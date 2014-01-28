@@ -11,16 +11,10 @@ import org.itri.icl.x300.op2ca.utils.CloudPlay.FindListener;
 import org.itri.icl.x300.op2ca.utils.CloudPlay.JoinListener;
 import org.itri.icl.x300.op2ca.utils.CloudPlay.OpenListener;
 import org.itri.icl.x300.op2ca.webdas.sys.CloudPlayImpl;
-import org.linphone.LinphoneManager;
-import org.linphone.core.LinphoneCore;
-
-import com.google.common.collect.Sets;
-
-import android.util.Log;
 
 import provider.Operations;
 import schema.element.Account;
-
+import android.util.Log;
 import conn.Http;
 
 public class PlayProvider implements Provider<CloudPlay> {
@@ -28,10 +22,16 @@ public class PlayProvider implements Provider<CloudPlay> {
 	@Inject Provider<Account> pAcct;
 	@Inject Provider<Http> pHttp;
 	@Inject Operations mFact;
-	static Set<OpenListener> mOpenListener = new HashSet<OpenListener>();
-	static Set<FindListener> mFindListener = new HashSet<FindListener>();
-	static Set<JoinListener> mJoinListener = new HashSet<JoinListener>();
-	
+		
+	Set<OpenListener> mOpenListener;
+	Set<FindListener> mFindListener;
+	Set<JoinListener> mJoinListener;
+	public PlayProvider() {
+		Log.wtf("play", "create play provider...");
+		mOpenListener = new HashSet<OpenListener>();
+		mFindListener = new HashSet<FindListener>();
+		mJoinListener = new HashSet<JoinListener>();	
+	}
 	@Override
 	public CloudPlay get() {
 		//Log.v("abcde", mOpenListener.hashCode() + " " + mFindListener.hashCode() + " " + mJoinListener.hashCode());

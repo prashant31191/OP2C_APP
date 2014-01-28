@@ -50,13 +50,10 @@ import data.Resources.Resource;
 public class CloudPlayImpl implements CloudPlay {
 	LinphoneChatRoom mChatRoom;
 	ObjectMapper mWriter;
-//	@Inject ;
-	Http mHttp;
-	Account mAcct;
-//	Injector injector = Guice.createInjector(new Module());
-
+	Provider<Http> mHttp;
+	Provider<Account> mAcct;
+	Set<OPInfo> mOPInfo = Sets.newHashSet();
 	Operations mFactory;
-//	@Inject
 	static Set<OpenListener> mOpenListener;
 	static Set<FindListener> mFindListener;
 	static Set<JoinListener> mJoinListener;
@@ -67,18 +64,20 @@ public class CloudPlayImpl implements CloudPlay {
 			if (lc != null)
 				mChatRoom = lc.getOrCreateChatRoom("sip:cloudplay@" + accu.get().getDomain());
 		} catch (Exception e) {
-			
+			e.printStackTrace();
 		}
 		mOpenListener = openListener;
 		mFindListener = findListener;
 		mJoinListener = joinListener;
-		mAcct = accu.get();
 		mWriter = new ObjectProvider().getContext(this.getClass());
-		mHttp = http.get();
-		mHttp.setAuth(accu.get().getUsername(), accu.get().getPassword());
-		mHttp.setBase("http://140.96.116.38:8080");
+		mHttp = http;
+		mAcct = accu;
+		
 		Log.wtf("chatroom", "base setting");
-		mHttp.log();
+//		mHttp = http.get();
+//		mHttp.setBase("http://140.96.116.38:8080");
+//		mHttp.setAuth(accu.get().getUsername(), accu.get().getPassword());
+//		mHttp.log();
 		mFactory = factory;
 	}
 	public void setCData(CData cdata) {
@@ -86,56 +85,58 @@ public class CloudPlayImpl implements CloudPlay {
 	}
 	
 
+//	private void init() {
+//		mHttp.setBase("http://140.96.116.38:8080");
+//		mHttp.setAuth(mAcct.get().getUsername(), mAcct.get().getPassword());
+//		mHttp.log();
+//	}
 	public Optional<List<Comments.Comment>> listComments(String opID, Long startTime, Long afterN) {
-		return mHttp.optComments(opID, startTime, afterN);
+//		init();
+		return mHttp.get().optComments(opID, startTime, afterN);
 	}
 	
 	public Optional<List<OPInfos.OPInfo>> listOPInfos(Long startTime, Long afterN) {
-		return mHttp.optOPInfos(startTime, afterN);
+		return mHttp.get().optOPInfos(startTime, afterN);
 	}
 	
 	@Override
 	public Future<List<OPInfos.OPInfo>> asyncListOPInfo(TypeListener<List<OPInfos.OPInfo>> tl, Long startTime, Long afterN) {
-		return mHttp.asyncListOPInfos(tl, startTime, afterN);
+		return mHttp.get().asyncListOPInfos(tl, startTime, afterN);
 	}
 	
 	public Optional<List<Contacts.Contact>> listContacts() {
-		return mHttp.optContacts();
+		return mHttp.get().optContacts();
 	}
 	
 	public Optional<List<Loves.Love>> listLoves(String opID) {
-		return mHttp.optLoves(opID);
+		return mHttp.get().optLoves(opID);
 	}
 	
 	public Optional<List<Resources.Resource>> listResources() {
-		return mHttp.optResources();
+		return mHttp.get().optResources();
 	}
 	
 	public Optional<List<Resources.Resource>> listResources(String type) {
-		return mHttp.optResources(type);
+		return mHttp.get().optResources(type);
 	}
 	
 	public void save(List<Contact> contacts) {
-		mHttp.save(contacts);
+		mHttp.get().save(contacts);
 	}
 	
 	public void save(OPInfo opInfo) {
-		mHttp.save(opInfo);
+		mHttp.get().save(opInfo);
 	}
 	
 	public void save(Resource resource) {
-		mHttp.save(resource);
+		mHttp.get().save(resource);
 	}
 	public void save(String opID, List<Comment> comments) {
-		mHttp.save(opID, comments);
+		mHttp.get().save(opID, comments);
 	}
 	public void save(String opID, Love love) {
-		mHttp.save(opID, love);
+		mHttp.get().save(opID, love);
 	}
-	
-	
-	
-	
 
 	@Override @SneakyThrows
 	public void start(String scene) {
@@ -146,7 +147,7 @@ public class CloudPlayImpl implements CloudPlay {
 	
 	private LinphoneChatRoom getChatRoom() {
 		if (mChatRoom == null)
-			mChatRoom = LinphoneManager.getLc().getOrCreateChatRoom("sip:cloudplay@" + mAcct.getDomain());
+			mChatRoom = LinphoneManager.getLc().getOrCreateChatRoom("sip:cloudplay@" + mAcct.get().getDomain());
 		return mChatRoom;
 	}
 
@@ -183,6 +184,7 @@ public class CloudPlayImpl implements CloudPlay {
 		ShareRtpAv share_av2 = mFactory.rtpAv(SHARE_RTPAV.finish, Module.getCData(), scene);
         share_av2.receivers("10d");
         getChatRoom().sendMessage(mWriter.writeValueAsString(share_av2));
+        Module.setCData(new CData());
 	}
 
 	@Override

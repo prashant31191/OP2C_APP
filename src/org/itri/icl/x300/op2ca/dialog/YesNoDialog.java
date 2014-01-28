@@ -51,8 +51,8 @@ public class YesNoDialog extends RoboDialogFragment implements OnClickListener {
 	@Override
 	public void onClick(View v) {
 		if (v == mBtnYes) {
-			
 			((Main)getActivity()).prev();
+			
 			//DeviceDialog mDeviceDialog = new DeviceDialog();
 			//mDeviceDialog.show(mFM, "device");
 		} 

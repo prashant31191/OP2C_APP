@@ -11,10 +11,13 @@ import lombok.extern.java.Log;
 import org.itri.icl.x300.op2ca.R;
 import org.itri.icl.x300.op2ca.adapter.FriendAdapter;
 import org.itri.icl.x300.op2ca.adapter.ShareAdapter;
-import org.itri.icl.x300.op2ca.data.ext.ContactArg;
 import org.itri.icl.x300.op2ca.db.OpDB;
 import org.itri.icl.x300.op2ca.utils.OrmLiteRoboFragment;
 import org.itri.icl.x300.op2ca.webdas.Main;
+
+import com.j256.ormlite.android.extras.OrmliteListLoader;
+import com.j256.ormlite.stmt.PreparedQuery;
+import com.j256.ormlite.stmt.QueryBuilder;
 
 import data.Contacts.Contact;
 
@@ -66,7 +69,7 @@ public class ShareFriend extends OrmLiteRoboFragment<OpDB> implements LoaderCall
 	
 	public ShareFriend(Bundle... bundle) {
 		if (bundle != null && !bundle[0].containsKey("people")) {
-			bundle[0].putParcelableArrayList("people", new ArrayList<ContactArg>());
+			bundle[0].putParcelableArrayList("people", new ArrayList<Contact>());
 		}
 		setArguments(bundle[0]);
 	}
@@ -96,7 +99,7 @@ public class ShareFriend extends OrmLiteRoboFragment<OpDB> implements LoaderCall
 		mListView.setEmptyView(mListEmpty);
 		mListView.setItemsCanFocus(false);
 		mListView.setOnItemClickListener(this);
-		mAdapter = new FriendAdapter(getHelper(), getArguments().<ContactArg>getParcelableArrayList("people"));
+		mAdapter = new FriendAdapter(getHelper(), getArguments().<Contact>getParcelableArrayList("people"));
 		mListView.setAdapter(mAdapter);
 		mBtnReset.setOnClickListener(this);
 		mBtnConfirm.setOnClickListener(this);
@@ -121,7 +124,7 @@ public class ShareFriend extends OrmLiteRoboFragment<OpDB> implements LoaderCall
 //			mAdapter.writeChecked();
 //			mAdapter.clearChecked();
 		} else if (v == mBtnConfirm) {
-			ArrayList<ContactArg> checked = mAdapter.readChecked();
+			ArrayList<Contact> checked = mAdapter.readChecked();
 			Bundle bundle = new Bundle();
 			bundle.putParcelableArrayList("people", checked);
 			((Main)getActivity()).prev(bundle);
@@ -131,14 +134,20 @@ public class ShareFriend extends OrmLiteRoboFragment<OpDB> implements LoaderCall
 		}
 	}
 
-	@Override
+	@Override @SneakyThrows
 	public Loader<List<Contact>> onCreateLoader(int arg0, Bundle arg1) {
-		return null;
+		log.warning("讀取聯絡人");
+		QueryBuilder<Contact, String> queryBuilder = getHelper().ctctDao().queryBuilder();
+		queryBuilder.where().ne("syncTime", 0);
+		PreparedQuery<Contact> preparedQuery = queryBuilder.prepare();
+		
+		return new OrmliteListLoader<Contact, String>(getActivity(), getHelper().ctctDao(), preparedQuery);
 	}
 
 	@Override
 	public void onLoadFinished(Loader<List<Contact>> arg0, List<Contact> arg1) {
-		
+		mAdapter.clear();
+		mAdapter.addAll(arg1);
 	}
 
 	@Override

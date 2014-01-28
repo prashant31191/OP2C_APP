@@ -127,11 +127,9 @@ public class Main extends OrmLiteRoboFragmentActivity<OpDB> implements OnClickLi
 		log.warning("返回");
 		Fragment curFrg = mTabManager.getCurrentFragment();
 //		curFrg.getChildFragmentManager().dump(arg0, arg1, arg2, arg3)
-	    if (curFrg != null && curFrg.getChildFragmentManager().getBackStackEntryCount() > 0) {
-	    	log.warning("返回1");
+	    if (curFrg != null && curFrg.getChildFragmentManager().getBackStackEntryCount() > 0) {log.warning("返回1");
 	    	curFrg.getChildFragmentManager().popBackStack();
-	    } else {
-	    	log.warning("返回0");
+	    } else {log.warning("返回0");
 	    	super.onBackPressed();
 	    }
 	}

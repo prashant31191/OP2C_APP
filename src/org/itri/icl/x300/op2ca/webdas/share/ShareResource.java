@@ -11,9 +11,8 @@ import lombok.SneakyThrows;
 import org.itri.icl.x300.op2ca.Module;
 import org.itri.icl.x300.op2ca.R;
 import org.itri.icl.x300.op2ca.adapter.DeviceAdapter;
-import org.itri.icl.x300.op2ca.data.ext.CapabilityArg;
-import org.itri.icl.x300.op2ca.data.ext.ResourceArg;
 import org.itri.icl.x300.op2ca.db.OpDB;
+import org.itri.icl.x300.op2ca.utils.CloudPlay;
 import org.itri.icl.x300.op2ca.utils.OrmLiteRoboFragment;
 import org.itri.icl.x300.op2ca.utils.WebTaskLoader;
 import org.itri.icl.x300.op2ca.webdas.Main;
@@ -23,6 +22,7 @@ import org.linphone.core.LinphoneChatRoom;
 import provider.ObjectProvider;
 import provider.Operations;
 import roboguice.inject.InjectView;
+import schema.element.Account;
 import schema.element.CData;
 import schema.element.ENUM.STEP.SHARE_RTPAV;
 import schema.operation.ShareRtpAv;
@@ -47,18 +47,20 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Optional;
-import com.google.inject.Guice;
-import com.google.inject.Injector;
+import com.j256.ormlite.android.extras.OrmliteListLoader;
+import com.j256.ormlite.stmt.PreparedQuery;
+import com.j256.ormlite.stmt.QueryBuilder;
 
 import conn.Http;
 
+import data.Capability;
 import data.Contacts.Contact;
 import data.Resources;
+import data.OPInfos.OPInfo;
 import data.Resources.Resource;
 
-public class ShareResource extends OrmLiteRoboFragment<OpDB> implements TextWatcher, OnClickListener, OnItemClickListener, LoaderCallbacks<Optional<List<Resource>>> {
+public class ShareResource extends OrmLiteRoboFragment<OpDB> implements TextWatcher, OnClickListener, OnItemClickListener, LoaderCallbacks<List<Resource>> {
 
 	@InjectView(R.id.editText) EditText mEditText;
 	@InjectView(R.id.treeView) ListView mListView;
@@ -72,12 +74,14 @@ public class ShareResource extends OrmLiteRoboFragment<OpDB> implements TextWatc
 	int previousGroup = -1;
 	ToggleButton mBtnDelt;
 	TextView mTextTitle;
+	@Inject Provider<Account> mAcctProvider;
 	ImageButton mBtnStop, mBtnBack, mBtnSort, mBtnFrnd;
 	
+	@Inject Provider<CloudPlay> mPlay;
 	
 	public ShareResource(Bundle... bundle) {
 		if (bundle != null && !bundle[0].containsKey("device")) {
-			bundle[0].putParcelableArrayList("device", new ArrayList<CapabilityArg>());
+			bundle[0].putParcelableArrayList("device", new ArrayList<Capability>());
 		}
 		setArguments(bundle[0]);
 	}
@@ -110,40 +114,58 @@ public class ShareResource extends OrmLiteRoboFragment<OpDB> implements TextWatc
 	public void onViewCreated(View view, Bundle state) {
 		super.onViewCreated(view, state);	        
 		mListView.setEmptyView(mListEmpty);
-		mAdapter = new DeviceAdapter(getHelper(), "video", getArguments().<ResourceArg>getParcelableArrayList("device"));
+		mAdapter = new DeviceAdapter(getHelper(), "video", getArguments().<Resource>getParcelableArrayList("device"));
 		mListView.setAdapter(mAdapter);
 		mListView.setOnItemClickListener(this);
 		mEditText.addTextChangedListener(this);
 		mBtnReset.setOnClickListener(this);
 		mBtnConfirm.setOnClickListener(this);
 		mListView.setTextFilterEnabled(true);
-//		getLoaderManager().initLoader(0, null, this);
+		getLoaderManager().initLoader(0, null, this);
 	}
 	
-	 @Override @SneakyThrows
-	 public Loader<Optional<List<Resource>>> onCreateLoader(int arg0, Bundle arg1) {
-		 Log.w("video2", "fetch video");
-		 return new WebTaskLoader<Optional<List<Resource>>>(getActivity()) {
-			public Optional<List<Resource>> loadInBackground() {
-				return mHttpProvider.get().optResources("video");
-			}
-		 };
-	 }
 	
-	 @Override
-	 public void onLoadFinished(Loader<Optional<List<Resource>>> arg0, Optional<List<Resource>> result) {
-		 Log.w("video2", "fetch " + result.isPresent());
-		 if (result.isPresent()) {
-			 List<Resource> resource = result.get();
-			 mAdapter.addAll(resource);
-			 getHelper().syncResource(resource);
-		 } 
-	 }
-	
-	 @Override
-	 public void onLoaderReset(Loader<Optional<List<Resource>>> arg0) {
-		 mAdapter.clear();
-	 }
+	//讀取硬碟列表 與 過濾
+	@Override @SneakyThrows
+	public Loader<List<Resource>> onCreateLoader(int arg0, Bundle bundle) {
+		QueryBuilder<Resource, String> queryBuilder = getHelper().rescDao().queryBuilder();
+		//queryBuilder.where().eq("senderID", mAcctProvider.get().getUsername());
+		PreparedQuery<Resource> preparedQuery = queryBuilder.prepare();
+		return new OrmliteListLoader<Resource, String>(getActivity(), getHelper().rescDao(), preparedQuery);
+	}
+
+	@Override
+	public void onLoadFinished(Loader<List<Resource>> arg0, List<Resource> info) {
+		mAdapter.clear();
+		mAdapter.addAll(info);
+	}
+
+	@Override
+	public void onLoaderReset(Loader<List<Resource>> arg0) {}
+//	 @Override @SneakyThrows
+//	 public Loader<Optional<List<Resource>>> onCreateLoader(int arg0, Bundle arg1) {
+//		 Log.w("video2", "fetch video");
+//		 return new WebTaskLoader<Optional<List<Resource>>>(getActivity()) {
+//			public Optional<List<Resource>> loadInBackground() {
+//				return mHttpProvider.get().optResources("video");
+//			}
+//		 };
+//	 }
+//	
+//	 @Override
+//	 public void onLoadFinished(Loader<Optional<List<Resource>>> arg0, Optional<List<Resource>> result) {
+//		 Log.w("video2", "fetch " + result.isPresent());
+//		 if (result.isPresent()) {
+//			 List<Resource> resource = result.get();
+//			 mAdapter.addAll(resource);
+//			 getHelper().syncResource(resource);
+//		 } 
+//	 }
+//	
+//	 @Override
+//	 public void onLoaderReset(Loader<Optional<List<Resource>>> arg0) {
+//		 mAdapter.clear();
+//	 }
 
 	@Override
 	public void afterTextChanged(Editable s) {
@@ -162,25 +184,31 @@ public class ShareResource extends OrmLiteRoboFragment<OpDB> implements TextWatc
 		} else if (v == mBtnReset) {
 			mAdapter.clearChecked();
 		} else if (v == mBtnConfirm) {
-			ArrayList<ResourceArg> checked = mAdapter.readChecked();
+			ArrayList<Resource> checked = mAdapter.readChecked();
 			Bundle bundle = new Bundle();
 			bundle.putParcelableArrayList("device", checked);
 			
-			
-			LinphoneChatRoom room = LinphoneManager.getLc().getOrCreateChatRoom("sip:cloudplay@61.221.50.9:5168");//140.96.116.226
-			Injector injector = Guice.createInjector(new Module());
-	        Operations factory = injector.getInstance(Operations.class);
-	        ShareRtpAv share_av;
-			if (!checked.isEmpty() && checked.get(0).getDisplayName().equals("我的手機")) {
-				share_av = factory.rtpAv(SHARE_RTPAV.start, new CData(), "local");
+			String username = mAcctProvider.get().getUsername();
+			if (!checked.isEmpty() && checked.get(0).getUri().contains(username)) {
+				mPlay.get().start("local");
 			} else {
-				share_av = factory.rtpAv(SHARE_RTPAV.start, new CData(), "remote");
+				mPlay.get().start("remote");
 			}
-			//FIXME
-			share_av.receivers("10e");
-	        ObjectMapper om = new ObjectProvider().getContext(this.getClass());
-	        String msg = om.writeValueAsString(share_av);
-	        room.sendMessage(msg);
+			
+			//LinphoneChatRoom room = LinphoneManager.getLc().getOrCreateChatRoom("sip:cloudplay@61.221.50.9:5168");//140.96.116.226
+			//Injector injector = Guice.createInjector(new Module());
+	        //Operations factory = injector.getInstance(Operations.class);
+//	        ShareRtpAv share_av;
+//			if (!checked.isEmpty() && checked.get(0).getDisplayName().equals("我的手機")) {
+//				share_av = factory.rtpAv(SHARE_RTPAV.start, new CData(), "local");
+//			} else {
+//				share_av = factory.rtpAv(SHARE_RTPAV.start, new CData(), "remote");
+//			}
+//			//FIXME
+//			share_av.receivers("10e");
+//	        ObjectMapper om = new ObjectProvider().getContext(this.getClass());
+//	        String msg = om.writeValueAsString(share_av);
+//	        room.sendMessage(msg);
 			((Main)getActivity()).prev(bundle);
 		}
 	}

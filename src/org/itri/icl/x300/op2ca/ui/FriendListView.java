@@ -5,7 +5,8 @@ import java.util.List;
 import lombok.extern.java.Log;
 
 import org.itri.icl.x300.op2ca.R;
-import org.itri.icl.x300.op2ca.data.ext.ContactArg;
+
+import data.Contacts.Contact;
 
 import android.content.Context;
 import android.graphics.Typeface;
@@ -22,10 +23,10 @@ public class FriendListView extends FlowLayout {
 	    setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT));
 
 	}
-	List<ContactArg> mChecked; 
-	public void setData(List<ContactArg> checked) {
+	List<Contact> mChecked; 
+	public void setContacts(List<Contact> checked) {
 		mChecked = checked;
-		for (ContactArg phone : mChecked) {
+		for (Contact phone : mChecked) {
 			FriendItem mFriendItem = new FriendItem(getContext(), phone);
 			
 			addView(mFriendItem);
@@ -33,7 +34,7 @@ public class FriendListView extends FlowLayout {
 	}
 	
 	public class FriendItem extends LinearLayout implements OnClickListener {
-		public FriendItem(Context context, ContactArg phone) {
+		public FriendItem(Context context, Contact phone) {
 			super(context);
 			View view = View.inflate(context, R.layout.op2c_item_friend, this); //重要
 			TextView textName = (TextView) view.findViewById(R.id.textName);
@@ -47,7 +48,7 @@ public class FriendListView extends FlowLayout {
 
 		@Override
 		public void onClick(View v) {
-			mChecked.remove((ContactArg)v.getTag());
+			mChecked.remove((Contact)v.getTag());
 //			mOpDB.clearChecked((Phone)v.getTag());
 			FriendListView.this.removeView(this);
 		}

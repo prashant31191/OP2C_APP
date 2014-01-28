@@ -97,6 +97,7 @@ public class ShareAdapter extends ArrayAdapter<OPInfo> implements OnClickListene
 		
 		ImageView imgLive = (ImageView) view.findViewById(R.id.pict_live);
 		imgLive.setImageResource(item.isRead()? R.drawable.webdas_live_org : R.drawable.webdas_live_red);
+		imgLive.setVisibility(item.isRead() ? View.GONE : View.VISIBLE);
 		
 		TextView txtOwner = (TextView) view.findViewById(R.id.text_owner);
 		if (item.getState() == State.OutgoingProgress.value()) {

@@ -11,14 +11,14 @@ import lombok.extern.java.Log;
 
 import org.itri.icl.x300.op2ca.App;
 import org.itri.icl.x300.op2ca.R;
-import org.itri.icl.x300.op2ca.data.ext.ContactArg;
-import org.itri.icl.x300.op2ca.data.ext.ResourceArg;
 import org.itri.icl.x300.op2ca.db.OpDB;
 import org.itri.icl.x300.op2ca.ui.TimerTextView;
 import org.itri.icl.x300.op2ca.utils.CloudPlay;
 import org.itri.icl.x300.op2ca.utils.CloudPlay.OpenListener;
 import org.itri.icl.x300.op2ca.utils.OrmLiteRoboFragment;
+import org.itri.icl.x300.op2ca.utils.VideoControllerListener;
 import org.itri.icl.x300.op2ca.webdas.Main;
+import org.linphone.CallManager;
 import org.linphone.LinphoneManager;
 import org.linphone.LinphoneService;
 import org.linphone.LinphoneUtils;
@@ -28,11 +28,18 @@ import org.linphone.core.LinphoneCall.State;
 import org.linphone.mediastream.video.AndroidVideoWindowImpl;
 import org.linphone.mediastream.video.AndroidVideoWindowImpl.VideoPreviewListener;
 import org.linphone.mediastream.video.AndroidVideoWindowImpl.VideoWindowListener;
+import org.linphone.mediastream.video.capture.hwconf.AndroidCameraConfiguration;
 
+import conn.Http;
+
+import data.Contacts.Contact;
 import data.OPInfos.OPInfo;
+import data.Resources.Resource;
 
 import roboguice.inject.InjectView;
+import schema.element.Account;
 import schema.element.CData;
+import android.graphics.Bitmap;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -40,6 +47,7 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -49,13 +57,12 @@ import android.widget.TextView;
 @Log
 public class EmbeddedVideo extends OrmLiteRoboFragment<OpDB> implements VideoWindowListener, OnClickListener, OpenListener {
 	
-	@InjectView(R.id.videoPreview) SurfaceView mViewPre; //GLSurfaceView
+	@InjectView(R.id.videoPreview) SurfaceView mViewPre;
 	@InjectView(R.id.videoCapture) GLSurfaceView mViewCap;
 	@InjectView(R.id.txtTitle) TextView mTitle;
 	@InjectView(R.id.txtDate) TextView mDate;
 	@InjectView(R.id.btnSwitch) ImageButton mBtnSwitch;
 	@InjectView(R.id.imgRecord) ImageView mImgRecord;
-	
 	
 	@InjectView(R.id.lytBtnReady) LinearLayout mLytReady;
 	@InjectView(R.id.lytBtnStart) LinearLayout mLytStart;
@@ -67,16 +74,19 @@ public class EmbeddedVideo extends OrmLiteRoboFragment<OpDB> implements VideoWin
 	@InjectView(R.id.btnStop2) ImageButton mBtnStop2;
 	@InjectView(R.id.txtDate) TimerTextView mTimerView;
 	AndroidVideoWindowImpl mVideoPreviewWindow;
-	ResourceArg resourceArg;
-	List<ResourceArg> mDevice;
-	List<ContactArg> mPeople;
+	Resource resourceArg;
+	List<Resource> mDevice;
+	List<Contact> mPeople;
 	@Inject Provider<CloudPlay> mPlay;
+	@Inject Provider<Account> mAcct;
+	@Inject Provider<Http> mHttp;
+	VideoControllerListener listener;
 	String mScene;
 	boolean mStart = false; 
-	public EmbeddedVideo(List<ResourceArg> device, List<ContactArg> people, String scene, boolean start) {
+	public EmbeddedVideo(List<Resource> device, List<Contact> people, String scene, boolean start) {
 		mDevice = device;
 		if (!mDevice.isEmpty())
-		resourceArg = mDevice.get(0);
+			resourceArg = mDevice.get(0);
 		mPeople = people;
 		mScene = scene;
 		mStart = start;
@@ -89,21 +99,9 @@ public class EmbeddedVideo extends OrmLiteRoboFragment<OpDB> implements VideoWin
 	@Override
     public void onViewCreated(View view, Bundle state) {
 		super.onViewCreated(view, state);
-		if (mScene.equalsIgnoreCase("remote")) {
-			log.warning("******* remote *******");
-			mViewPre.setVisibility(View.VISIBLE); // gone
-			mViewCap.setVisibility(View.VISIBLE);
-			//mViewCap.setZOrderOnTop(true);
-			mVideoPreviewWindow = new AndroidVideoWindowImpl(mViewCap, mViewPre);
-			//mViewPre.getHolder().setFixedSize(1, 1);
-		} else {
-			log.warning("******* local *******");
-			mViewPre.setVisibility(View.VISIBLE);
-			mViewCap.setVisibility(View.GONE); // gone
-			//mViewPre.setZOrderOnTop(true);
-			mVideoPreviewWindow = new AndroidVideoWindowImpl(mViewCap, mViewPre);
-//			mViewCap.getHolder().setFixedSize(1, 1);
-		}
+		mViewPre.setVisibility(View.VISIBLE);
+		mViewCap.setVisibility(mScene.equalsIgnoreCase("remote") ? View.VISIBLE : View.GONE);
+		mVideoPreviewWindow = new AndroidVideoWindowImpl(mViewCap, mViewPre);
 		if (mStart) {
 			mLytStart.setVisibility(View.VISIBLE);
 			mLytReady.setVisibility(View.GONE);
@@ -111,92 +109,51 @@ public class EmbeddedVideo extends OrmLiteRoboFragment<OpDB> implements VideoWin
 			mLytStart.setVisibility(View.GONE);
 			mLytReady.setVisibility(View.VISIBLE);
 		}
-		mBtnSwitch.setVisibility(resourceArg.getCapabilities().size() == 1 ? View.INVISIBLE : View.VISIBLE);
+		//mBtnSwitch.setVisibility(resourceArg.getCapabilities().size() == 1 ? View.INVISIBLE : View.VISIBLE);
 		mVideoPreviewWindow.setListener(this);
 		mVideoPreviewWindow.init();
 		mBtnSwitch.setOnClickListener(this);
 		mBtnStart1.setOnClickListener(this);
 		mBtnPause.setOnClickListener(this);
-		
 		mBtnStop1.setOnClickListener(this);
 		mBtnStop2.setOnClickListener(this);
 	}
 	
 	public Button getShareButton() {
 		return null;
-//		return mBtnShare;
 	}
 	
 	public Button getCancelButton() {
 		return null;
-//		return mBtnCancel;
 	}
 
-//	@Override
-//	public void onVideoPreviewSurfaceReady(AndroidVideoWindowImpl vw, SurfaceView surface) {
-//		if (mScene.equalsIgnoreCase("remote")) {
-//			mViewCap = (GLSurfaceView)surface;
-//			LinphoneManager.getLc().setPreviewWindow(mViewCap);
-//		} else {
-//			mViewPre = (SurfaceView)surface;
-//			LinphoneManager.getLc().setPreviewWindow(mViewPre);
-//		}
-//	}
-//
-//	@Override
-//	public void onVideoPreviewSurfaceDestroyed(AndroidVideoWindowImpl vw) {
-//		LinphoneManager.getLc().setPreviewWindow(null);
-//	}
 	
 	public void setTitle(String title) {
 		String typedText = title.toString().trim();
 		mTitle.setText(typedText.isEmpty() ? "無主旨" : typedText);
 	}
 
+	public void setVideoControllerListener(VideoControllerListener listener) {
+		this.listener = listener;
+	}
 	@Override
 	public void onClick(View v) {
 		if (v == mBtnSwitch) {
-			App.makeToast(resourceArg.getCapabilities().size() + " size");
-		} else if (v == mBtnStop1) {
-			if (mScene.equals("local")) {
-				mPlay.get().finish("local");
-			} else {
-				mPlay.get().finish("remote");
-			}
-			hangUp();
-			getFragmentManager().beginTransaction().remove(this).commit();
+			switchCamera();App.makeToast(resourceArg.getCapabilities().size() + " size");
+		} else if (v == mBtnStop1 && listener != null) {
+			listener.onVideoStop();
 			mDevice.clear();
-		} else if (v == mBtnStart1) {
-			if (mPeople.isEmpty()) {
-				App.makeToast("尚未選定聯絡人");
-				return;
-			} 
-			
-			if (mScene.equals("local")) {
-				mPlay.get().ready(mScene);
-			} else {
-				mPlay.get().ready("remote");
-			}
-			((Main)getActivity()).replace(new ShareStream(mDevice, mPeople, mScene));
-			
-		} else if (v == mBtnStop2) {
-			
-			if (mScene.equals("local")) {
-				mPlay.get().finish(mScene);
-			} else {
-				mPlay.get().finish("remote");
-			}
-			hangUp();
+		} else if (v == mBtnStart1 && listener != null) {
+			listener.onVideoPlay();
+			//mHttp.get().asyncSave(OPInfo.of(UUID.randomUUID().toString(), mAcct.get().getUsername(), "sender", "video", resourceArg.getUri(), mTitle.getText().toString()));
+		} else if (v == mBtnStop2 && listener != null) {
+			listener.onVideoStop();
 			mTimerView.pause();
-		} else if (v == mBtnPause) {
-			pauseOrResumeCall();
+		} else if (v == mBtnPause && listener != null) {
+			listener.onVideoPlay();
+			
+			//pauseOrResumeCall();
 		}
-//		if (v == mBtnCancel) {
-////			mLytPreview.setVisibility(View.INVISIBLE);
-//		} else if (v == mBtnShare) {
-////			LinphoneManager.getInstance().newOutgoingPlay(res);
-////			((Main)getActivity()).prev();
-//		}
 	}
 	
 	
@@ -227,19 +184,6 @@ public class EmbeddedVideo extends OrmLiteRoboFragment<OpDB> implements VideoWin
 		}
 	}
 	
-	private void hangUp() {
-		LinphoneCore lc = LinphoneManager.getLc();
-		LinphoneCall currentCall = lc.getCurrentCall();
-		LinphoneManager.getLc().setVideoWindow(null);
-		if (currentCall != null) {
-			lc.terminateCall(currentCall);
-		} else if (lc.isInConference()) {
-			lc.terminateConference();
-		} else {
-			lc.terminateAllCalls();
-		}
-		
-	}
 	@Override
 	public void onResume() {super.onResume();	
 		if (mVideoPreviewWindow != null && LinphoneService.isReady()) {
@@ -270,7 +214,6 @@ public class EmbeddedVideo extends OrmLiteRoboFragment<OpDB> implements VideoWin
 			mVideoPreviewWindow.release();
 			mVideoPreviewWindow = null;
 		}
-
 		super.onDestroy();
 	}
 
@@ -292,6 +235,7 @@ public class EmbeddedVideo extends OrmLiteRoboFragment<OpDB> implements VideoWin
 	public void onVideoPreviewSurfaceDestroyed(AndroidVideoWindowImpl vw) {
 		LinphoneManager.getLc().setPreviewWindow(null);		
 	}
+	
 	@Override
 	public void onVideoPreviewSurfaceReady(AndroidVideoWindowImpl vw, SurfaceView surface) {
 		mViewPre = surface;
@@ -299,7 +243,23 @@ public class EmbeddedVideo extends OrmLiteRoboFragment<OpDB> implements VideoWin
 	}
 	@Override
 	public void onOpen() {
-		// TODO Auto-generated method stub
-		
+	}
+	
+	
+	public void switchCamera() {
+		try {
+			int videoDeviceId = LinphoneManager.getLc().getVideoDevice();
+			videoDeviceId = (videoDeviceId + 1) % AndroidCameraConfiguration.retrieveCameras().length;
+			LinphoneManager.getLc().setVideoDevice(videoDeviceId);
+			CallManager.getInstance().updateCall();
+			
+			// previous call will cause graph reconstruction -> regive preview
+			// window
+			if (mViewPre != null) {
+				LinphoneManager.getLc().setPreviewWindow(mViewPre);
+			}
+		} catch (ArithmeticException ae) {
+			//Log.e("Cannot swtich camera : no camera");
+		}
 	}
 }

@@ -41,10 +41,12 @@ import org.linphone.core.LinphoneCore;
 import org.linphone.mediastream.video.AndroidVideoWindowImpl;
 import org.linphone.mediastream.video.AndroidVideoWindowImpl.VideoDisplayListener;
 import org.linphone.mediastream.video.AndroidVideoWindowImpl.VideoWindowListener;
+import org.linphone.mediastream.video.capture.AndroidVideoApi5JniWrapper;
 import org.linphone.mediastream.video.display.GL2JNIView;
 import org.linphone.ui.AddressText;
 
 import roboguice.inject.InjectView;
+import schema.element.Account;
 import android.app.AlarmManager;
 import android.app.AlertDialog;
 import android.app.PendingIntent;
@@ -113,8 +115,7 @@ public class Home extends OrmLiteRoboFragment<OpDB> implements JoinListener, Loa
 	ImageButton mBtnBack, mBtnStop, mBtnFrid, mBtnSort;
 	TextView mTextTitle;
 	AndroidVideoWindowImpl mVideoDisplayWindow;
-	
-	ResourceV1 mResource;
+	@Inject Provider<Account> mAcc;
 	@Inject Provider<CloudPlay> mCloudPlay;
 	@Inject AlarmManager mAlarmMgr;
 	
@@ -159,7 +160,6 @@ public class Home extends OrmLiteRoboFragment<OpDB> implements JoinListener, Loa
 		LinphoneManager.getLc().setDeviceRotation(rotation);
 		mAlwaysChangingPhoneAngle = rotation;
 		LinphoneManager.getLc().setVideoWindow(null);
-		
 		return inflater.inflate(R.layout.op2c_home, c, false);
 	}
 	
@@ -173,6 +173,7 @@ public class Home extends OrmLiteRoboFragment<OpDB> implements JoinListener, Loa
 		mBtnClose.setOnClickListener(this);
 		mBtnTalk.setOnClickListener(this);
 		mVideoDisplayWindow = new AndroidVideoWindowImpl(mVideoView, mViewPre);
+		
 		mVideoDisplayWindow.setListener(this);
 		mVideoDisplayWindow.init();
 		mVideoPanel.setVisibility(LinphoneManager.getLc().isIncall() ? View.VISIBLE : View.GONE);
@@ -189,7 +190,7 @@ public class Home extends OrmLiteRoboFragment<OpDB> implements JoinListener, Loa
 			}
 		}, 0L, 100L);
 		//getLoaderManager().initLoader(0, new Bundle(), this);
-        getLoaderManager().initLoader(1, new Bundle(), this);
+       // getLoaderManager().initLoader(1, new Bundle(), this);
 	}
 	
 	
@@ -198,6 +199,7 @@ public class Home extends OrmLiteRoboFragment<OpDB> implements JoinListener, Loa
 	@Override @SneakyThrows
 	public Loader<List<OPInfo>> onCreateLoader(int arg0, Bundle bundle) {
 		QueryBuilder<OPInfo, String> queryBuilder = getHelper().infoDao().queryBuilder();
+		queryBuilder.where().ne("senderID", mAcc.get().getUsername());
 		switch (bundle.getInt("order", 0)) {
 		case 1:
 			queryBuilder.orderBy("createTime", false);break;
@@ -232,6 +234,7 @@ public class Home extends OrmLiteRoboFragment<OpDB> implements JoinListener, Loa
 		} else if (v == mBtnClose) {
 			mVideoPanel.setVisibility(View.GONE);
 			hangUp();
+			//mCloudPlay.get().finish("local");
 		}
 	}
 
@@ -241,30 +244,32 @@ public class Home extends OrmLiteRoboFragment<OpDB> implements JoinListener, Loa
 //		YesNoDialog mYesNoDialog = new YesNoDialog();
 //		mYesNoDialog.show(getChildFragmentManager(), "yesNo");
 		//TODO
+		mViewPre.refreshDrawableState();
+		mVideoView.refreshDrawableState();
+		
 		startOrientationSensor();
 		//answer();
 		//TODO
 		OPInfo res = (OPInfo) arg0.getItemAtPosition(pos);
-		String _88888 = Module.getCData().lookup("url").toString().substring(4, 9);
-		log.warning("cdata = " + _88888);
-		res.setSenderID(_88888);
-		LinphoneManager.getInstance().newOutgoingPlay(res);
-		mListView.smoothScrollToPositionFromTop(pos, 0);
+		res.setRead(true);
+		getHelper().markAsRead(res);
+		try {
+			String _88888 = Module.getCData().lookup("url").toString().substring(4, 9);
+			log.warning("cdata = " + _88888);
+			res.setSenderID(_88888);
+			LinphoneManager.getInstance().sendStaticImage(true);
+			//AndroidVideoApi5JniWrapper.lowBandwidth = false;
+			LinphoneManager.getInstance().newOutgoingPlay(res);
+			mListView.smoothScrollToPositionFromTop(pos, 0);
+		} catch (Exception e) {
+			
+		}
+		
+		
+		
 	}
 	
-	/* VideoWindowListener */
-	@Override
-	public void onVideoRenderingSurfaceReady(AndroidVideoWindowImpl vw, SurfaceView surface) {
-		mVideoView = (GLSurfaceView) surface;
-		LinphoneManager.getLc().setVideoWindow(vw);
-	}
 
-	@Override
-	public void onVideoRenderingSurfaceDestroyed(AndroidVideoWindowImpl vw) {
-		if (LinphoneManager.getLc() != null) {
-			LinphoneManager.getLc().setVideoWindow(null);
-		}
-	}
 	
 	/* copy from linphone's VideoCallFragment.java*/
 	@Override
@@ -293,6 +298,10 @@ public class Home extends OrmLiteRoboFragment<OpDB> implements JoinListener, Loa
 		if (mVideoView != null) {
 			((GLSurfaceView) mVideoView).onPause();
 		}
+		
+		//mViewPre.destroyDrawingCache();
+		//mVideoView.destroyDrawingCache();
+		
 		super.onPause();
 	}
 	
@@ -313,6 +322,7 @@ public class Home extends OrmLiteRoboFragment<OpDB> implements JoinListener, Loa
 			mOrientationHelper.disable();
 			mOrientationHelper = null;
 		}
+		
 		super.onDestroy();
 	}
 	
@@ -390,7 +400,7 @@ public class Home extends OrmLiteRoboFragment<OpDB> implements JoinListener, Loa
 		} else if (state == State.OutgoingInit) {
 			log.warning("撥出... " + message + " " + call.getCurrentParamsCopy().getVideoEnabled());
 			startOrientationSensor();
-			LinphoneManager.getInstance().routeAudioToSpeaker();
+			//LinphoneManager.getInstance().routeAudioToSpeaker();
 			
 //			new Handler(Looper.getMainLooper()).post(new Runnable() {
 //			@Override
@@ -447,6 +457,21 @@ public class Home extends OrmLiteRoboFragment<OpDB> implements JoinListener, Loa
 			new Handler(Looper.getMainLooper()).post(new Runnable() {
 	            public void run() { 
 	            	mVideoPanel.setVisibility(View.GONE);
+	            	mViewPre.destroyDrawingCache();
+	        		mVideoView.destroyDrawingCache();
+	        		//mVideoView.refreshDrawableState();
+	        		
+//	        		if (LinphoneManager.getLc() != null)
+//	        			LinphoneManager.getLc().setVideoWindow(null);
+//	        		if (mVideoDisplayWindow != null) { 
+//	        			// Prevent linphone from crashing if correspondent hang up while you are rotating
+//	        			mVideoDisplayWindow.release();
+//	        			mVideoDisplayWindow = null;
+//	        			
+//	        			mVideoDisplayWindow = new AndroidVideoWindowImpl(mVideoView, mViewPre);
+//	        			mVideoDisplayWindow.setListener(Home.this);
+////	        			mVideoDisplayWindow.init();
+//	        		}
 	            }});
 			mVideoWidnow = false;
 			// Convert LinphoneCore message for internalization
@@ -465,6 +490,10 @@ public class Home extends OrmLiteRoboFragment<OpDB> implements JoinListener, Loa
 		LinphoneCore lc = LinphoneManager.getLc();
 		LinphoneCall currentCall = lc.getCurrentCall();
 		LinphoneManager.getLc().setVideoWindow(null);
+		
+		mViewPre.destroyDrawingCache();
+		mVideoView.destroyDrawingCache();
+		
 		if (currentCall != null) {
 			lc.terminateCall(currentCall);
 		} else if (lc.isInConference()) {
@@ -496,12 +525,31 @@ public class Home extends OrmLiteRoboFragment<OpDB> implements JoinListener, Loa
 		LinphoneManager.getLc().setPreviewWindow(mViewPre);
 	}
 
+	
+	/* VideoWindowListener */
+	@Override
+	public void onVideoRenderingSurfaceReady(AndroidVideoWindowImpl vw, SurfaceView surface) {
+		
+		LinphoneManager.getLc().setVideoWindow(vw);
+		mVideoView = (GLSurfaceView) surface;
+	}
+
+	@Override
+	public void onVideoRenderingSurfaceDestroyed(AndroidVideoWindowImpl vw) {
+		if (LinphoneManager.getLc() != null) {
+			LinphoneManager.getLc().setVideoWindow(null);
+		}
+	}
+	
+	
 	@Override
 	public void onJoin() {
-		log.warning("join add");
-		final OPInfo op = OPInfo.of(UUID.randomUUID().toString(), "0000909111069", "SELF", "52館攝影機69", "video", "New Share Content", 0L, "0", 0L, 0L, System.currentTimeMillis() - 10000, System.currentTimeMillis());
+		//log.warning("join add");
+		final OPInfo op = OPInfo.of(UUID.randomUUID().toString(), "0000909111069", "SELF", "52館攝影機69", "video", "New Share Content");
 		try {
+			getHelper().markAllRead();
 			getHelper().infoDao().createIfNotExists(op);
+			
 		} catch (Exception e) {
 			
 		}

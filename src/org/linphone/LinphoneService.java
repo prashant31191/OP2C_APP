@@ -209,10 +209,11 @@ public final class LinphoneService extends Service implements LinphoneServiceLis
 		
 		LinphoneManager.getLc().setPresenceInfo(0, "", OnlineStatus.Online);
 		//make sure the application will at least wakes up every 10 mn
+		android.util.Log.wtf("chatroom", "啟動reregister");
 		Intent intent = new Intent(this, KeepAliveHandler.class);
 	    mkeepAlivePendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_ONE_SHOT);
 		((AlarmManager) this.getSystemService(Context.ALARM_SERVICE)).setRepeating(AlarmManager.ELAPSED_REALTIME_WAKEUP
-																							, SystemClock.elapsedRealtime()+600000
+																							, SystemClock.elapsedRealtime() + 600000
 																							, 600000
 																							, mkeepAlivePendingIntent);
 	}

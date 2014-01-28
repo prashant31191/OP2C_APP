@@ -105,6 +105,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.MinMaxPriorityQueue;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+import com.google.inject.Stage;
 import com.j256.ormlite.android.apptools.OpenHelperManager;
 
 import conn.Http;
@@ -227,8 +228,8 @@ public class LinphoneManager implements LinphoneCoreListener {
 		mVibrator = (Vibrator) c.getSystemService(Context.VIBRATOR_SERVICE);
 		mPowerManager = (PowerManager) c.getSystemService(Context.POWER_SERVICE);
 		mR = c.getResources();
-		
-		Injector injector = Guice.createInjector(new Module());
+		android.util.Log.wtf("play", "before inject");
+		Injector injector = Guice.createInjector(Stage.DEVELOPMENT, new Module());
 		factory = injector.getInstance(Operations.class);
 		mHttp = injector.getProvider(Http.class);
 		mCloudPlay = injector.getProvider(CloudPlay.class);
@@ -909,6 +910,8 @@ public class LinphoneManager implements LinphoneCoreListener {
 	private MinMaxPriorityQueue<ShareRtpAv> mHolder = MinMaxPriorityQueue.maximumSize(100).<ShareRtpAv>create();
     
 //	CloudPlay mCloudPlay;
+	String transID = "";
+	String transID2 = "";
 	public void textReceived(LinphoneCore lc, LinphoneChatRoom cr, LinphoneAddress from, String message) {
 		if (lc.getCurrentCall() != null) {
 			
@@ -919,87 +922,42 @@ public class LinphoneManager implements LinphoneCoreListener {
 		ObjectMapper om = new ObjectProvider().getContext(this.getClass());
 		try {
 			ShareRtpAv share_av = om.readValue(message, ShareRtpAv.class);
+			
+			
 			switch(share_av.getStep()) {
 				case open:
-					android.util.Log.wtf("chatroom", "open...");
-//					for (OpenListener open : mCloudPlay.getOpenListener()) {
-//						open.onOpen();
-//					}
 					Module.setCData(share_av.getCdata());
-					android.util.Log.wtf("cdata", share_av.getCdata().lookup("url").toString());
-					int i = 0;
-					if (i < 1) {
-					
-						OPInfo res = OPInfo.of("1", share_av.getCdata().lookup("url").toString().substring(4, 9), "SELF", "52館攝影機69", "video", "Share Content", 42L, "24", 22L, 44L, System.currentTimeMillis() - 10000, System.currentTimeMillis());
-					
+					android.util.Log.wtf("cdata", share_av.getCdata().lookup("url").toString() + " transID = " + share_av.getTranID().toString());
+//					int i = 0;
+					if(!transID.equals(share_av.getTranID().toString())) {
+						transID = share_av.getTranID().toString();
+						if ("local".equals(share_av.getScene())) {
+							android.util.Log.wtf("chatroom", "local 解析度不變");
+							AndroidVideoApi5JniWrapper.lowBandwidth = false;
+						} else {
+							android.util.Log.wtf("chatroom", "local 解析度變小");
+							AndroidVideoApi5JniWrapper.lowBandwidth = false;
+						}
+						OPInfo res = OPInfo.of("1", share_av.getCdata().lookup("url").toString().substring(4, 9), "SELF", "52館攝影機69", "video", "Share Content");
 						play(res);
-					i++;
 					}
 					break;
 				case inquire:
-//					for (FindListener find : mCloudPlay.getFindListener()) {
-//						find.onFind();
-//					}
+					if(!transID2.equals(share_av.getTranID().toString())) {
+						transID2 = share_av.getTranID().toString();
 						android.util.Log.wtf("chatroom",  "inquire =  " + message);
 						Module.setCData(share_av.getCdata());
-						LinphoneChatRoom room = LinphoneManager.getLc().getOrCreateChatRoom("sip:cloudplay@61.221.50.9:5168");
-//						Injector injector = Guice.createInjector(new Module());
-//				        Operations factory = injector.getInstance(Operations.class);
-				        ShareRtpAv share_av2 = factory.rtpAv(SHARE_RTPAV.answer, Module.getCData(), share_av.getScene());
-				        share_av2.receivers("10d");
-				        share_av2.setCdata(share_av.getCdata());
-				        ObjectMapper om2 = new ObjectProvider().getContext(this.getClass());
-				        try {
-				        	String msg = om2.writeValueAsString(share_av2);
-				        	room.sendMessage(msg);
-				        } catch (Exception e) {
-				        	e.printStackTrace();
-				        }
-		
-			
-
+						mCloudPlay.get().answer(share_av.getScene());
+					}
 					break;
 				case join:
-					
+					Module.setCData(share_av.getCdata());
 //					App.makeToast("有新訊息");
 					android.util.Log.wtf("chatroom", mCloudPlay +  " " + CloudPlay2 + "join listener size = " + CloudPlay2.getJoinListener().size());
 					for (JoinListener join : CloudPlay2.getJoinListener()) {
 						android.util.Log.wtf("chatroom", "呼叫 onJoin() ");
 						join.onJoin();
 					}
-					
-						
-//					int k = 0;
-//					if (k < 1) {
-//						LinphoneChatRoom room2 = LinphoneManager.getLc().getOrCreateChatRoom("sip:cloudplay@61.221.50.9:5168");
-//						Injector injector2 = Guice.createInjector(new Module());
-//				        Operations factory2 = injector2.getInstance(Operations.class);
-//				        ShareRtpAv share_av3 = factory2.rtpAv(SHARE_RTPAV.answer, Module.getCData(), share_av.getScene());
-//				        share_av3.receivers("10d");
-//				        ObjectMapper om3 = new ObjectProvider().getContext(this.getClass());
-//				        try {
-//				        	String msg = om3.writeValueAsString(share_av3);
-//				        	room2.sendMessage(msg);
-//				        } catch (Exception e) {
-//				        	e.printStackTrace();
-//				        }
-//						k++;
-//					}
-//					LinphoneChatRoom room2 = LinphoneManager.getLc().getOrCreateChatRoom("sip:cloudplay@140.96.116.226");
-//					Injector injector2 = Guice.createInjector(new Module());
-//			        Operations factory2 = injector2.getInstance(Operations.class);
-//			        ShareRtpAv share_av2 = factory2.rtpAv(SHARE_RTPAV.answer, new CData(), share_av.getScene());
-//			        share_av2.receivers("10d");
-//			        ObjectMapper om2 = new ObjectProvider().getContext(this.getClass());
-//			        try {
-//			        	String msg = om2.writeValueAsString(share_av2);
-//			        	room.sendMessage(msg);
-//			        } catch (Exception e) {
-//			        	e.printStackTrace();
-//			        }
-//					Http http = mHttp.get();
-//					//http.listOPInfos(0L, 100L);
-//					android.util.Log.w("chatroom", "可以播了");
 					break;
 			}
 		} catch (Exception e) {

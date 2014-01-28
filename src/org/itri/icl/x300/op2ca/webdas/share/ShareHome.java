@@ -4,17 +4,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 
 import lombok.SneakyThrows;
 
+import org.itri.icl.x300.op2ca.Module;
 import org.itri.icl.x300.op2ca.R;
 import org.itri.icl.x300.op2ca.adapter.ShareAdapter;
 import org.itri.icl.x300.op2ca.data.ResourceV1;
 import org.itri.icl.x300.op2ca.db.OpDB;
 import org.itri.icl.x300.op2ca.utils.OrmLiteRoboFragment;
+import org.itri.icl.x300.op2ca.utils.WebTaskLoader;
 import org.itri.icl.x300.op2ca.webdas.Main;
+import org.linphone.LinphoneManager;
 
 import roboguice.inject.InjectView;
+import schema.element.Account;
 import android.app.NotificationManager;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
@@ -38,11 +43,16 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 
+import com.google.common.base.Optional;
 import com.j256.ormlite.android.extras.OrmliteListLoader;
 import com.j256.ormlite.stmt.PreparedQuery;
 import com.j256.ormlite.stmt.QueryBuilder;
 
+import conn.Http;
+
+import data.Contacts.Contact;
 import data.OPInfos.OPInfo;
+import data.Resources.Resource;
 
 public class ShareHome extends OrmLiteRoboFragment<OpDB> implements LoaderCallbacks<List<OPInfo>>, OnItemClickListener, OnClickListener, OnCheckedChangeListener, OnItemSelectedListener {
 
@@ -63,6 +73,8 @@ public class ShareHome extends OrmLiteRoboFragment<OpDB> implements LoaderCallba
 	TextView mTextTitle;
 	ImageButton mBtnStop, mBtnBack, mBtnFrid, mBtnSort;
 	TabWidget mTabWidget;
+	@Inject Provider<Account> mAcc;
+	@Inject Provider<Http> mHttpProvider;
 	@Override 
     public View onCreateView(LayoutInflater inflater, ViewGroup c, Bundle state) {
 		mBtnDelt = (ToggleButton)((Main)getActivity()).getButtonToggle();
@@ -97,26 +109,46 @@ public class ShareHome extends OrmLiteRoboFragment<OpDB> implements LoaderCallba
 		mBtnVideo.setOnClickListener(this);
 		mBtnMgmt.setOnClickListener(this);
 		mBtnShare.setOnClickListener(this);
-		getLoaderManager().initLoader(0, new Bundle(), this);
+		//getLoaderManager().initLoader(0, new Bundle(), this);
 	}
 	
 	@Override @SneakyThrows
 	public Loader<List<OPInfo>> onCreateLoader(int arg0, Bundle bundle) {
+		
 		QueryBuilder<OPInfo, String> queryBuilder = getHelper().infoDao().queryBuilder();
-		switch (bundle.getInt("order", 0)) {
-		case 0:queryBuilder.orderBy("createTime", false);break;
-		case 1:queryBuilder.orderBy("endDate", false);break;
-		case 2:queryBuilder.orderBy("like", false);break;
-		default:queryBuilder.orderBy("expireTime", false);break;
-		}
+		queryBuilder.where().eq("senderID", mAcc.get().getUsername());
+//		switch (bundle.getInt("order", 0)) {
+//		case 0:queryBuilder.orderBy("createTime", false);break;
+//		case 1:queryBuilder.orderBy("endDate", false);break;
+//		case 2:queryBuilder.orderBy("like", false);break;
+//		default:queryBuilder.orderBy("expireTime", false);break;
+//		}
 		PreparedQuery<OPInfo> preparedQuery = queryBuilder.prepare();
 		return new OrmliteListLoader<OPInfo, String>(getActivity(), getHelper().infoDao(), preparedQuery);
+		
+		
+//		return new WebTaskLoader<Optional<List<OPInfo>>>(getActivity()) {
+//			public Optional<List<OPInfo>> loadInBackground() {
+//				return mHttpProvider.get().optOPInfos(0L, 1000L);
+//			}
+//		};
+//		QueryBuilder<OPInfo, String> queryBuilder = getHelper().infoDao().queryBuilder();
+//		queryBuilder.where().eq("senderID", mAcc.get().getUsername());
+//		switch (bundle.getInt("order", 0)) {
+//		case 0:queryBuilder.orderBy("createTime", false);break;
+//		case 1:queryBuilder.orderBy("endDate", false);break;
+//		case 2:queryBuilder.orderBy("like", false);break;
+//		default:queryBuilder.orderBy("expireTime", false);break;
+//		}
+//		PreparedQuery<OPInfo> preparedQuery = queryBuilder.prepare();
+//		return new OrmliteListLoader<OPInfo, String>(getActivity(), getHelper().infoDao(), preparedQuery);
 	}
 
 	@Override
 	public void onLoadFinished(Loader<List<OPInfo>> arg0, List<OPInfo> res) {
-		mAdapter.clear();
-		mAdapter.addAll(res);
+			mAdapter.clear();
+			mAdapter.addAll(res);
+
 	}
 
 	@Override
@@ -127,7 +159,16 @@ public class ShareHome extends OrmLiteRoboFragment<OpDB> implements LoaderCallba
 	@Override
 	public void onItemClick(AdapterView<?> arg0, View arg1, int pos, long arg3) {
 		OPInfo resource = mAdapter.getItem(pos);
-		//((Main)getActivity()).next(new ShareStream(resource));
+		
+		try {
+			String _88888 = Module.getCData().lookup("url").toString().substring(4, 9);
+			resource.setSenderID(_88888);
+			LinphoneManager.getInstance().play(resource);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		((Main)getActivity()).next(new ShareStream(new ArrayList<Resource>(), new ArrayList<Contact>(), resource));
 		
 	}
 
@@ -138,7 +179,7 @@ public class ShareHome extends OrmLiteRoboFragment<OpDB> implements LoaderCallba
 		} else if (v == mBtnFile) {
 		} else if (v == mBtnAudio) {
 		} else if (v == mBtnVideo) {//log.warning("換下一頁");
-			((Main)getActivity()).next(new ShareEdit());
+			((Main) getActivity()).next(new ShareEdit());
 		} else if (v == mBtnMgmt) {
 		} else {
 		}

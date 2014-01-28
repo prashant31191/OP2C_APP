@@ -1,25 +1,19 @@
 package org.itri.icl.x300.op2ca.db;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.Callable;
 
 import lombok.SneakyThrows;
 import lombok.extern.java.Log;
 
-import org.itri.icl.x300.op2ca.data.Message;
 import org.itri.icl.x300.op2ca.data.ResourceV1;
-import org.itri.icl.x300.op2ca.data.TYPE;
-import org.itri.icl.x300.op2ca.data.TYPE.FUNC_TYPE;
-import org.itri.icl.x300.op2ca.utils.ResourceDao;
 import org.itri.icl.x300.op2ca.utils.CapabilityDao;
+import org.itri.icl.x300.op2ca.utils.ResourceDao;
 
 import android.content.Context;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.google.common.collect.Lists;
@@ -27,7 +21,6 @@ import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
 import com.j256.ormlite.android.extras.AndroidBaseDaoImpl;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.Dao.CreateOrUpdateStatus;
-import com.j256.ormlite.dao.RuntimeExceptionDao;
 import com.j256.ormlite.stmt.DeleteBuilder;
 import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.stmt.UpdateBuilder;
@@ -37,15 +30,16 @@ import com.j256.ormlite.table.TableUtils;
 import data.Capability;
 import data.Comments.Comment;
 import data.Contacts.Contact;
+import data.Loves.Love;
+import data.Member;
 import data.OPInfos.OPInfo;
-import data.Resources;
 import data.Resources.Resource;
 
 @Log
 public class OpDB extends OrmLiteSqliteOpenHelper {
 
 	private static final String DATABASE_NAME = "opdb.db";
-	private static final int DATABASE_VERSION = 1;
+	private static final int DATABASE_VERSION = 2;
 	private Dao<ResourceV1, Long> resDao;
 	private Dao<Contact, String> ctctDao;
 	private Dao<Resource, String> rescDao;
@@ -67,16 +61,13 @@ public class OpDB extends OrmLiteSqliteOpenHelper {
 	@Override
 	public void onCreate(SQLiteDatabase arg0, ConnectionSource conn) {
 		try {
-			TableUtils.createTable(conn, ResourceV1.class);
+			//TableUtils.createTable(conn, ResourceV1.class);
 			TableUtils.createTable(conn, Resource.class);
 			TableUtils.createTable(conn, Capability.class);
 			TableUtils.createTable(conn, OPInfo.class);
-//			TableUtils.createTable(conn, Device.class);
-//			TableUtils.createTable(conn, Function.class);
-//			TableUtils.createTable(conn, People.class);
-//			TableUtils.createTable(conn, Phone.class);
-//			TableUtils.createTable(conn, Group.class);
+			TableUtils.createTable(conn, Love.class);
 			TableUtils.createTable(conn, Comment.class);
+			TableUtils.createTable(conn, Member.class);
 			TableUtils.createTable(conn, Contact.class);
 			init();
 		} catch (SQLException e) {log.severe("Can't create database");
@@ -88,13 +79,13 @@ public class OpDB extends OrmLiteSqliteOpenHelper {
 	@Override
 	public void onUpgrade(SQLiteDatabase db, ConnectionSource conn, int arg2, int arg3) {
 		try {log.info("onUpgrade()");
-			TableUtils.dropTable(conn, ResourceV1.class, true);
+			//TableUtils.dropTable(conn, ResourceV1.class, true);
 			TableUtils.dropTable(conn, Resource.class, true);
 			TableUtils.dropTable(conn, OPInfo.class, true);
-//			TableUtils.dropTable(conn, People.class, true);
-//			TableUtils.dropTable(conn, Phone.class, true);
+			TableUtils.dropTable(conn, Love.class, true);
 			TableUtils.dropTable(conn, Capability.class, true);
 			TableUtils.dropTable(conn, Comment.class, true);
+			TableUtils.dropTable(conn, Member.class, true);
 			TableUtils.dropTable(conn, Contact.class, true);
 			onCreate(db, conn);
 		} catch (SQLException e) {
@@ -134,13 +125,15 @@ public class OpDB extends OrmLiteSqliteOpenHelper {
 		
 		
 		
-		infoDao().createIfNotExists(OPInfo.of("1", "0000909111069", "SELF", "52館攝影機69", "video", "Share Content", 42L, "24", 22L, 44L, System.currentTimeMillis() - 10000, System.currentTimeMillis()));
-		infoDao().createIfNotExists(OPInfo.of("2", "0000909111050", "SELF", "外拍50", "image", "Share Content", 12L, "21", 11L, 22L, System.currentTimeMillis() - 10000, System.currentTimeMillis()));
-		infoDao().createIfNotExists(OPInfo.of("3", "yf25", "SELF", "小美專案修改文件yf25", "docum", "Share Content", 01L, "10", 11L, 00L, System.currentTimeMillis() - 10000, System.currentTimeMillis()));
-		infoDao().createIfNotExists(OPInfo.of("4", "py71", "SELF", "妹妹畢業典禮py71", "image", "Share Content", 35L, "53", 33L, 55L, System.currentTimeMillis() - 10000, System.currentTimeMillis()));
+		infoDao().createIfNotExists(OPInfo.of("1", "0000909111069", "SELF", "52館攝影機69", "video", "Share Content"));
+		infoDao().createIfNotExists(OPInfo.of("2", "0000909111050", "SELF", "外拍50", "image", "Share Content"));
+		infoDao().createIfNotExists(OPInfo.of("3", "yf25", "SELF", "小美專案修改文件yf25", "docum", "Share Content"));
+		infoDao().createIfNotExists(OPInfo.of("4", "py71", "SELF", "妹妹畢業典禮py71", "image", "Share Content"));
+		
+		infoDao().createIfNotExists(OPInfo.of("6", "10d", "SELF", "我的分享", "video", "我的分享"));
 		
 		
-		OPInfo res = OPInfo.of("5", "0000909111055", "自己", "去年尾牙55", "audio", "Share Content", 03L, "30", 00L, 33L, System.currentTimeMillis() - 10000, System.currentTimeMillis());
+		OPInfo res = OPInfo.of("5", "0000909111055", "自己", "去年尾牙55", "audio", "Share Content");
 		res = infoDao().createIfNotExists(res);
 		
 		Comment m1 = Comment.of(res, "0931333405", "Hello1", System.currentTimeMillis() - 10000L);
@@ -174,7 +167,7 @@ public class OpDB extends OrmLiteSqliteOpenHelper {
 		cmntDao().createIfNotExists(m11);
 		cmntDao().createIfNotExists(m12);
 		
-		resDao().createIfNotExists(ResourceV1.of(6, "0000909111032", "自己", "桌上攝影機32", "audio", "Share Content", 03, 30, 00, 33, System.currentTimeMillis() - 10000, System.currentTimeMillis()));
+		//resDao().createIfNotExists(ResourceV1.of(6, "0000909111032", "自己", "桌上攝影機32", "audio", "Share Content", 03, 30, 00, 33, System.currentTimeMillis() - 10000, System.currentTimeMillis()));
 	}
 	@SneakyThrows
 	public AndroidBaseDaoImpl<Resource, String> getDeviceDao() {
@@ -300,9 +293,9 @@ public class OpDB extends OrmLiteSqliteOpenHelper {
 	
 	@SneakyThrows
 	public void syncContacts(Collection<Contact> contacts) {
-		final long syncTime = System.currentTimeMillis();
+		Long syncTime = 0L;// = System.currentTimeMillis();
 		for(Contact contact : contacts) {
-			contact.setSyncTime(syncTime);
+			syncTime = contact.getSyncTime();
 			CreateOrUpdateStatus status = ctctDao().createOrUpdate(contact);
 			log.warning(status.isCreated() + " " + status.isUpdated());
 		}
@@ -387,11 +380,23 @@ public class OpDB extends OrmLiteSqliteOpenHelper {
 		return rescDao.query(qb.prepare());
 	}
 	
+	
 	@SneakyThrows
-	public void markAsRead(ResourceV1 resource) {
-		resDao = resDao();
+	public void markAllRead() {
+		infoDao = infoDao();
+		UpdateBuilder<OPInfo, String> ub = infoDao.updateBuilder();
+		ub.updateColumnValue("read", true);
+		ub.where().eq("read", false);
+		log.warning("更新所有為已讀");
+		infoDao.update(ub.prepare());
+	}
+	
+	
+	@SneakyThrows
+	public void markAsRead(OPInfo resource) {
+		infoDao = infoDao();
 		resource.setRead(true);
 		log.warning("更新已讀");
-		resDao.update(resource);
+		infoDao.update(resource);
 	}
 }

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
-    android:layout_height="180dp"
+    android:layout_width="fill_parent"
+    android:layout_height="200dp"
     android:background="#000000" >
 
     <RelativeLayout
@@ -28,7 +28,7 @@
             android:layout_centerVertical="true"
             android:layout_toRightOf="@+id/imageView2"
             android:text="無主旨"
-            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textSize="14dp"
             android:textColor="#ffffff" />
 
         <ImageButton
@@ -44,50 +44,56 @@
 
     <RelativeLayout
         android:id="@+id/lytVideo"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_above="@+id/videoTools"
         android:layout_below="@+id/videoHeader" >
 
        
-<!--         <LinearLayout android:layout_width="match_parent"
-       				  android:layout_height="match_parent"
-       				  android:orientation="vertical"
-       				  >
+     	<FrameLayout android:layout_width="match_parent"
+       				 android:layout_height="match_parent"
+       				 android:orientation="vertical"
+       				 android:gravity="center"
+       				 >
             
-                    <org.linphone.mediastream.video.display.GL2JNIView
+      	<org.linphone.mediastream.video.display.GL2JNIView
             android:id="@+id/videoCapture"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
+            android:layout_gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
             android:layout_marginLeft="15dp"
             android:layout_marginRight="15dp"
             android:visibility="visible" />
         
     	<SurfaceView
-            android:id="@+id/videoPreview"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_marginLeft="15dp"
-            android:layout_marginRight="15dp"
-            android:visibility="visible" />
-        </LinearLayout> -->
+    	    android:id="@+id/videoPreview"
+    	    android:layout_width="wrap_content"
+    	    android:layout_height="match_parent"
+    	    android:layout_gravity="center"
+    	    android:layout_marginLeft="15dp"
+    	    android:layout_marginRight="15dp"
+    	    android:visibility="visible" />
+        
+         </FrameLayout>
        
-
+<!-- 
          <org.linphone.mediastream.video.display.GL2JNIView
             android:id="@+id/videoCapture"
-            android:layout_width="match_parent"
+            android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:layout_marginLeft="15dp"
             android:layout_marginRight="15dp"
             android:visibility="visible" />
 
         <SurfaceView
+            
+            android:layout_gravity="center"
             android:id="@+id/videoPreview"
-            android:layout_width="match_parent"
+            android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:layout_marginLeft="15dp"
             android:layout_marginRight="15dp"
-            android:visibility="visible" /> 
+            android:visibility="visible" />  -->
 
         <ImageView
             android:id="@+id/imgRecord"

@@ -7,10 +7,11 @@ import lombok.extern.java.Log;
 
 import org.itri.icl.x300.op2ca.R;
 import org.itri.icl.x300.op2ca.adapter.FunctionAdapter;
-import org.itri.icl.x300.op2ca.data.ext.ResourceArg;
 import org.itri.icl.x300.op2ca.db.OpDB;
 import org.itri.icl.x300.op2ca.utils.OrmLiteRoboFragment;
 import org.itri.icl.x300.op2ca.webdas.Main;
+
+import data.Resources.Resource;
 
 import roboguice.inject.InjectView;
 import android.database.Cursor;
@@ -54,7 +55,7 @@ public class ShareTree extends OrmLiteRoboFragment<OpDB> implements OnGroupExpan
 	
 	public ShareTree(Bundle... bundle) {
 		if (bundle != null && !bundle[0].containsKey("device")) {
-			bundle[0].putParcelableArrayList("device", new ArrayList<ResourceArg>());
+			bundle[0].putParcelableArrayList("device", new ArrayList<Resource>());
 		}
 		setArguments(bundle[0]);
 	}

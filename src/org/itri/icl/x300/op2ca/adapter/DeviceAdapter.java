@@ -10,8 +10,6 @@ import lombok.SneakyThrows;
 
 import org.itri.icl.x300.op2ca.App;
 import org.itri.icl.x300.op2ca.R;
-import org.itri.icl.x300.op2ca.data.ext.CapabilityArg;
-import org.itri.icl.x300.op2ca.data.ext.ResourceArg;
 import org.itri.icl.x300.op2ca.db.OpDB;
 
 import android.graphics.Typeface;
@@ -39,14 +37,14 @@ public class DeviceAdapter extends ArrayAdapter<Resource> {
 	String mType;
 	SelectArg mSelectArg;
 	@SneakyThrows
-	public DeviceAdapter(OpDB opDB, String type, List<ResourceArg> device) throws SQLException {
+	public DeviceAdapter(OpDB opDB, String type, List<Resource> device) throws SQLException {
 		super(App.getCtx(), R.layout.op2c_item_group, R.id.txtDevice, new ArrayList<Resource>());
 		mDevDao = opDB.getDeviceDao();
 		QueryBuilder<Capability, Long> qb = opDB.getFunctionDao().queryBuilder();
 		mType = type;
 		qb.where().eq("type", mType);
 		addAll(mDevDao.query(mDevDao.queryBuilder().join(qb).distinct().prepare()));
-		for (ResourceArg devArg : device) {
+		for (Resource devArg : device) {
 			Resource dev = mDevDao.queryForId(devArg.getUri());
 			entry = new SimpleEntry<Resource, Boolean>(dev, true);
 		}
@@ -95,20 +93,21 @@ public class DeviceAdapter extends ArrayAdapter<Resource> {
 	}
 
 
-	public ArrayList<ResourceArg> readChecked() {
+	public ArrayList<Resource> readChecked() {
+		if (entry == null) return new ArrayList<Resource>();
 		Resource resource = entry.getKey();
-		final ResourceArg resourceArg = new ResourceArg(resource.getUri(), resource.getDisplayName(), resource.getStatus());
-		Collection<CapabilityArg> capArg = Collections2.transform(resource.getCapabilities(), new Function<Capability, CapabilityArg>() {
-			@Override
-			public CapabilityArg apply(Capability arg0) {
-				CapabilityArg arg = new CapabilityArg(arg0.getId(), 
-													  arg0.getType(), 
-													  arg0.getText(), resourceArg);
-				return arg;
-			}
-		});
-		resourceArg.setCapabilities(capArg);
-		return (entry != null && entry.getValue()) ? Lists.newArrayList(resourceArg) : new ArrayList<ResourceArg>();
+//		final ResourceArg resourceArg = new ResourceArg(resource.getUri(), resource.getDisplayName(), resource.getStatus());
+//		Collection<CapabilityArg> capArg = Collections2.transform(resource.getCapabilities(), new Function<Capability, CapabilityArg>() {
+//			@Override
+//			public CapabilityArg apply(Capability arg0) {
+//				CapabilityArg arg = new CapabilityArg(arg0.getId(), 
+//													  arg0.getType(), 
+//													  arg0.getText(), resourceArg);
+//				return arg;
+//			}
+//		});
+//		resource.setCapabilities(capArg);
+		return (entry != null && entry.getValue()) ? Lists.newArrayList(resource) : new ArrayList<Resource>();
 	}
 
 	public void clearChecked() {

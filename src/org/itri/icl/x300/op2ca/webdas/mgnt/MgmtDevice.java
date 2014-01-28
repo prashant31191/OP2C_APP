@@ -136,9 +136,4 @@ public class MgmtDevice extends OrmLiteRoboFragment<OpDB> implements OnGroupExpa
 	public void onLoaderReset(Loader<List<Resource>> loader) {
 		
 	}
-	
-//	@Subscribe
-//	public void onMainEvent() {
-//		
-//	}
 }

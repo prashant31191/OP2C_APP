@@ -1,5 +1,8 @@
 package org.itri.icl.x300.op2ca.webdas;
 
+import javax.inject.Inject;
+import javax.inject.Provider;
+
 import lombok.extern.java.Log;
 
 import org.itri.icl.x300.op2ca.AccountProvider;
@@ -34,7 +37,7 @@ public class Login extends RoboFragmentActivity implements OnClickListener, Text
 	@InjectView(R.id.btnLogin) Button mBtnLogin;
 	@InjectView(R.id.edtUsername) EditText mEdtUsername;
 	@InjectView(R.id.edtPassword) EditText mEdtPassword;
-	
+	@Inject Provider<Account> mAcc;
 	public void onCreate(Bundle state) { super.onCreate(state);
 		mEdtUsername.addTextChangedListener(this);
 		mEdtPassword.setEnabled(false);
@@ -50,9 +53,7 @@ public class Login extends RoboFragmentActivity implements OnClickListener, Text
 		lc.clearProxyConfigs();
 		lc.clearAuthInfos();
 		mNewPrefs.removePreviousVersionAuthInfoRemoval();
-		Injector injector = Guice.createInjector(new Module());
-		AccountProvider account = injector.getInstance(AccountProvider.class);
-        Account acc = account.get();
+        Account acc = mAcc.get();
 		mNewPrefs.setNewAccountUsername(mEdtUsername.getText().toString());
 		mNewPrefs.setNewAccountPassword(mEdtPassword.getText().toString());
 		mNewPrefs.setNewAccountUserId(mEdtUsername.getText().toString());
@@ -60,12 +61,14 @@ public class Login extends RoboFragmentActivity implements OnClickListener, Text
 		try {
 			
 			mNewPrefs.saveNewAccount();
+			
 			//TODO
 			//mNewPrefs.setAccountProxy(0, "isip.dlinkddns.com:9090");
 //			mNewPrefs.setAccountProxy(0, acc.getDomain());
 			//mNewPrefs.setAccountOutboundProxyEnabled(0, true);
 			mNewPrefs.setDebugEnabled(true);
 			mNewPrefs.setEchoCancellation(false);
+			mNewPrefs.setFrontCamAsDefault(false);
 			//Log.e("firewall = " + mNewPrefs.getAccountCount() + " " + lc.getProxyConfigList().length + " " + mNewPrefs.getAccountProxy(0) + " " + mNewPrefs.isVideoEnabled() + " " + mNewPrefs.getTransport());
 		} catch (LinphoneCoreException e) {
 			e.printStackTrace();

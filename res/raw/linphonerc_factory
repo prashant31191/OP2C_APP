@@ -16,7 +16,7 @@ ping_with_options=0
 audio_rtp_port=7076
 video_rtp_port=9078
 audio_jitt_comp=60
-video_jitt_comp=60
+video_jitt_comp=120
 nortp_timeout=60
 disable_upnp=1
 

@@ -1,31 +1,42 @@
 package org.itri.icl.x300.op2ca.webdas.mon;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import javax.inject.Inject;
+import javax.inject.Provider;
 
 import lombok.extern.java.Log;
 
 import org.itri.icl.x300.op2ca.db.OpDB;
 import org.itri.icl.x300.op2ca.utils.OrmLiteRoboIntentService;
 
+import schema.element.Account;
+
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
+import conn.Http;
+
+import data.Capability;
 import data.Contacts.Contact;
+import data.Resources.Resource;
 
 
 import android.content.Intent;
 import android.database.Cursor;
 import android.provider.ContactsContract.*;
-import android.provider.ContactsContract.Contacts;
 
 @Log
 public class SyncPeople extends OrmLiteRoboIntentService<OpDB> {
 
+	@Inject Provider<Http> mHttpProvider;
+	@Inject Provider<Account> mAcctProvider;
 	public SyncPeople() {
 		super("sync_people");
 	}
-
 	//取得Android DB的聯絡人，同步到WebDAS App DB.
 	@Override
 	protected void onHandleIntent(Intent intent) {
@@ -35,26 +46,24 @@ public class SyncPeople extends OrmLiteRoboIntentService<OpDB> {
 		int lookupIndex = cursor.getColumnIndex(CommonDataKinds.Phone.LOOKUP_KEY);
 		int contactIndex = cursor.getColumnIndex(CommonDataKinds.Phone.CONTACT_ID);
 		int numberIndex = cursor.getColumnIndex(CommonDataKinds.Phone.NUMBER);
-//		Map<String, People> hm = Maps.newHashMap();
 		Set<Contact> ctcts = Sets.newHashSet();
+		Long time = System.currentTimeMillis();
 		for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
+			
 			String lookupKey = cursor.getString(lookupIndex);
+			log.warning("lookup key = " + lookupKey);
 			String displayName = cursor.getString(displayNameIndex);
 			String number = cursor.getString(numberIndex);
-			ctcts.add(Contact.of(number, displayName, lookupKey));
-//			if(hm.containsKey(cursor.getString(lookupIndex))) {
-//				People people = hm.get(lookupKey);
-//				people.add(Phone.of(cursor.getString(numberIndex)));
-//			} else {
-//				People people = People.of(lookupKey, cursor.getLong(contactIndex), 
-//													 cursor.getString(displayNameIndex));
-//				people.add(Phone.of(cursor.getString(numberIndex)));
-//				hm.put(lookupKey, people);
-//			}
-			//log.warning(cursor.getString(lookupIndex) + " " + cursor.getLong(idIndex) + " " + cursor.getString(numberIndex) + " - " + cursor.getString(displayNameIndex));
+			
+			ctcts.add(Contact.of(number, displayName, lookupKey, time));
 		}
-//		getHelper().sync(hm.values());
 		getHelper().syncContacts(ctcts);
+		//Http http = mHttpProvider.get();
+		//Account acct = mAcctProvider.get();
+		//http.save(Lists.newArrayList(ctcts));
+		//http.save(Resource.of(acct.getUsername()+"@device.com", "我的手機", "online", Sets.newHashSet(Capability.of("audio", "聲音裝置"), Capability.of("video", "影像裝置"))));
+		//http.save(Resource.of("10b@device.com", "遠端攝影機", "online", Sets.newHashSet(Capability.of("video", "影像裝置"))));
+		
 	}
 
 }
