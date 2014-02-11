@@ -934,9 +934,10 @@ public class LinphoneManager implements LinphoneCoreListener {
 						if ("local".equals(share_av.getScene())) {
 							android.util.Log.wtf("chatroom", "local 解析度不變");
 							AndroidVideoApi5JniWrapper.lowBandwidth = false;
+							LinphoneManager.getInstance().sendStaticImage(false);
 						} else {
-							android.util.Log.wtf("chatroom", "local 解析度變小");
 							AndroidVideoApi5JniWrapper.lowBandwidth = false;
+							LinphoneManager.getInstance().sendStaticImage(true);
 						}
 						OPInfo res = OPInfo.of("1", share_av.getCdata().lookup("url").toString().substring(4, 9), "SELF", "52館攝影機69", "video", "Share Content");
 						play(res);
