@@ -178,18 +178,18 @@ public class Home extends OrmLiteRoboFragment<OpDB> implements JoinListener, Loa
 		mVideoDisplayWindow.init();
 		mVideoPanel.setVisibility(LinphoneManager.getLc().isIncall() ? View.VISIBLE : View.GONE);
 		//先秀出目前DB的資料，然後馬上呼叫webapi, 
-		mCloudPlay.get().asyncListOPInfo(new TypeListener<List<OPInfo>>(new GenericType<List<OPInfo>>(){}) {
-			@Override
-			public void onComplete(Future<List<OPInfo>> arg0)
-					throws InterruptedException {
-				try{
-					log.warning("info size = " + arg0.get().size());
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		}, 0L, 100L);
-		//getLoaderManager().initLoader(0, new Bundle(), this);
+//		mCloudPlay.get().asyncListOPInfo(new TypeListener<List<OPInfo>>(new GenericType<List<OPInfo>>(){}) {
+//			@Override
+//			public void onComplete(Future<List<OPInfo>> arg0)
+//					throws InterruptedException {
+//				try{
+//					log.warning("info size = " + arg0.get().size());
+//				} catch (Exception e) {
+//					e.printStackTrace();
+//				}
+//			}
+//		}, 0L, 100L);
+		getLoaderManager().initLoader(0, new Bundle(), this);
        // getLoaderManager().initLoader(1, new Bundle(), this);
 	}
 	
@@ -544,8 +544,8 @@ public class Home extends OrmLiteRoboFragment<OpDB> implements JoinListener, Loa
 	
 	@Override
 	public void onJoin() {
-		//log.warning("join add");
-		final OPInfo op = OPInfo.of(UUID.randomUUID().toString(), "0000909111069", "SELF", "52館攝影機69", "video", "New Share Content");
+		log.warning("join add");
+		final OPInfo op = OPInfo.of(UUID.randomUUID().toString(), "10d", "SELF", "52館攝影機69", "video", "New Share Content");
 		try {
 			getHelper().markAllRead();
 			getHelper().infoDao().createIfNotExists(op);

@@ -1,5 +1,6 @@
 package org.itri.icl.x300.op2ca.webdas.share;
 
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
@@ -145,6 +146,13 @@ public class EmbeddedVideo extends OrmLiteRoboFragment<OpDB> implements VideoWin
 			mDevice.clear();
 		} else if (v == mBtnStart1 && listener != null) {
 			listener.onVideoPlay();
+			log.warning("寫入DB");
+			OPInfo op = OPInfo.of(UUID.randomUUID().toString(), mAcct.get().getUsername(), "SELF", "立即分享", "video", "New Share Content");
+			try {
+				getHelper().infoDao().createIfNotExists(op);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 			//mHttp.get().asyncSave(OPInfo.of(UUID.randomUUID().toString(), mAcct.get().getUsername(), "sender", "video", resourceArg.getUri(), mTitle.getText().toString()));
 		} else if (v == mBtnStop2 && listener != null) {
 			listener.onVideoStop();

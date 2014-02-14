@@ -944,6 +944,7 @@ public class LinphoneManager implements LinphoneCoreListener {
 					}
 					break;
 				case inquire:
+					android.util.Log.wtf("chatroom",  "inquire =  " + message);
 					if(!transID2.equals(share_av.getTranID().toString())) {
 						transID2 = share_av.getTranID().toString();
 						android.util.Log.wtf("chatroom",  "inquire =  " + message);

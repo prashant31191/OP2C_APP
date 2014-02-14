@@ -96,7 +96,7 @@ public class OpDB extends OrmLiteSqliteOpenHelper {
 
 	@SneakyThrows
 	public void init() {
-		Resource d1 = Resource.of("0,", "我的手機", "ok", new HashSet<Capability>());
+		Resource d1 = Resource.of("10d,", "我的手機", "ok", new HashSet<Capability>());
 		Capability f1 = Capability.of("video", "影像裝置");
 		Capability f2 = Capability.of("audio", "影音裝置");
 		d1 = rescDao().createIfNotExists(d1);
@@ -105,7 +105,7 @@ public class OpDB extends OrmLiteSqliteOpenHelper {
 		funDao().createIfNotExists(f1);
 		funDao().createIfNotExists(f2);
 		
-		Resource d2 = Resource.of("1,", "虛擬裝置", "ok", new HashSet<Capability>());
+		Resource d2 = Resource.of("106,", "遠端裝置", "ok", new HashSet<Capability>());
 		Capability f3 = Capability.of("video", "影像裝置");
 		Capability f4 = Capability.of("audio", "我的mic");
 		d2 = rescDao().createIfNotExists(d2);
@@ -115,11 +115,11 @@ public class OpDB extends OrmLiteSqliteOpenHelper {
 		funDao().createIfNotExists(f4);
 		
 		
-		Resource d3 = Resource.of("2,", "手機麥克風", "ok", new HashSet<Capability>());
-		Capability f6 = Capability.of("audio", "你的mic");
-		d3 = rescDao().createIfNotExists(d3);
-		f6.setResource(d3);
-		funDao().createIfNotExists(f6);
+//		Resource d3 = Resource.of("2,", "手機麥克風", "ok", new HashSet<Capability>());
+//		Capability f6 = Capability.of("audio", "你的mic");
+//		d3 = rescDao().createIfNotExists(d3);
+//		f6.setResource(d3);
+//		funDao().createIfNotExists(f6);
 		
 		
 		
@@ -294,6 +294,7 @@ public class OpDB extends OrmLiteSqliteOpenHelper {
 	@SneakyThrows
 	public void syncContacts(Collection<Contact> contacts) {
 		Long syncTime = 0L;// = System.currentTimeMillis();
+		log.warning(contacts.size() +  " Contact Size");
 		for(Contact contact : contacts) {
 			syncTime = contact.getSyncTime();
 			CreateOrUpdateStatus status = ctctDao().createOrUpdate(contact);

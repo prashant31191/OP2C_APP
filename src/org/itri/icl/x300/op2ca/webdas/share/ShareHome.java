@@ -7,6 +7,7 @@ import javax.inject.Inject;
 import javax.inject.Provider;
 
 import lombok.SneakyThrows;
+import lombok.extern.java.Log;
 
 import org.itri.icl.x300.op2ca.Module;
 import org.itri.icl.x300.op2ca.R;
@@ -54,6 +55,7 @@ import data.Contacts.Contact;
 import data.OPInfos.OPInfo;
 import data.Resources.Resource;
 
+@Log
 public class ShareHome extends OrmLiteRoboFragment<OpDB> implements LoaderCallbacks<List<OPInfo>>, OnItemClickListener, OnClickListener, OnCheckedChangeListener, OnItemSelectedListener {
 
 	@InjectView(R.id.btnText) LinearLayout mBtnText;
@@ -109,7 +111,7 @@ public class ShareHome extends OrmLiteRoboFragment<OpDB> implements LoaderCallba
 		mBtnVideo.setOnClickListener(this);
 		mBtnMgmt.setOnClickListener(this);
 		mBtnShare.setOnClickListener(this);
-		//getLoaderManager().initLoader(0, new Bundle(), this);
+		getLoaderManager().initLoader(0, new Bundle(), this);
 	}
 	
 	@Override @SneakyThrows
@@ -124,6 +126,7 @@ public class ShareHome extends OrmLiteRoboFragment<OpDB> implements LoaderCallba
 //		default:queryBuilder.orderBy("expireTime", false);break;
 //		}
 		PreparedQuery<OPInfo> preparedQuery = queryBuilder.prepare();
+		
 		return new OrmliteListLoader<OPInfo, String>(getActivity(), getHelper().infoDao(), preparedQuery);
 		
 		
@@ -147,8 +150,8 @@ public class ShareHome extends OrmLiteRoboFragment<OpDB> implements LoaderCallba
 	@Override
 	public void onLoadFinished(Loader<List<OPInfo>> arg0, List<OPInfo> res) {
 			mAdapter.clear();
+			log.warning("res size + " + res.size());
 			mAdapter.addAll(res);
-
 	}
 
 	@Override
