@@ -50,13 +50,16 @@ public class Splash extends RoboActivity implements EcCalibrationListener {
 				@SneakyThrows
 				public void run() {
 					LinphoneManager.getInstance().startEcCalibration(Splash.this);
-					startActivity(new Intent(Splash.this, Main.class));
+					startActivityForResult(new Intent(Splash.this, Main.class), 200);
 					finish();
 				}
 			}, 1000);
 		
 	}
 
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {log.warning("code: " + requestCode + " " + resultCode);
+		super.onActivityResult(requestCode, resultCode, data);
+	}
 	private class ServiceWaitThread extends Thread {
 		public void run() {
 			while (!LinphoneService.isReady()) {

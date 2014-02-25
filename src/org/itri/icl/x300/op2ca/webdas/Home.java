@@ -189,8 +189,8 @@ public class Home extends OrmLiteRoboFragment<OpDB> implements JoinListener, Loa
 //				}
 //			}
 //		}, 0L, 100L);
-		getLoaderManager().initLoader(0, new Bundle(), this);
-       // getLoaderManager().initLoader(1, new Bundle(), this);
+//		getLoaderManager().initLoader(0, new Bundle(), this);
+        getLoaderManager().initLoader(1, new Bundle(), this);
 	}
 	
 	

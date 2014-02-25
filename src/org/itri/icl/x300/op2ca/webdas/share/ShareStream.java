@@ -205,6 +205,7 @@ public class ShareStream extends OrmLiteRoboFragment<OpDB> implements LoaderCall
 	public void onVideoStop() {
 		log.warning("scene = " + mScene);
 		mPlay.get().finish(mScene);
+		((Main)getActivity()).prev();
 	}
 	
 	private void hangUp() {

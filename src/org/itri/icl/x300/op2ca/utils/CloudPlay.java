@@ -55,8 +55,6 @@ public interface CloudPlay {
 	Optional<List<Resources.Resource>> listResources(String type);
 	
 	void save(OPInfos.OPInfo opInfo);
-	
-	
 	Future<List<OPInfos.OPInfo>> asyncListOPInfo(TypeListener<List<OPInfos.OPInfo>> tl, Long startTime, Long afterN);
 	
 	

@@ -48,14 +48,16 @@ public class SyncPeople extends OrmLiteRoboIntentService<OpDB> {
 		int numberIndex = cursor.getColumnIndex(CommonDataKinds.Phone.NUMBER);
 		Set<Contact> ctcts = Sets.newHashSet();
 		Long time = System.currentTimeMillis();
+		Set<String> keys = Sets.newHashSet();
 		for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
-			
 			String lookupKey = cursor.getString(lookupIndex);
-			log.warning("lookup key = " + lookupKey);
-			String displayName = cursor.getString(displayNameIndex);
-			String number = cursor.getString(numberIndex);
-			
-			ctcts.add(Contact.of(number, displayName, lookupKey, time));
+			if (!keys.contains(lookupKey)) {
+				log.warning("lookup key = " + lookupKey);
+				String displayName = cursor.getString(displayNameIndex);
+				String number = cursor.getString(numberIndex);
+				ctcts.add(Contact.of(number, displayName, lookupKey, time));
+				keys.add(lookupKey);
+			}
 		}
 		getHelper().syncContacts(ctcts);
 		//Http http = mHttpProvider.get();

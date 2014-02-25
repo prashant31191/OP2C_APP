@@ -68,11 +68,11 @@ public class EmbeddedVideo extends OrmLiteRoboFragment<OpDB> implements VideoWin
 	@InjectView(R.id.lytBtnReady) LinearLayout mLytReady;
 	@InjectView(R.id.lytBtnStart) LinearLayout mLytStart;
 	
-	@InjectView(R.id.btnStart1) ImageButton mBtnStart1;
-	@InjectView(R.id.btnPause) ImageButton mBtnPause;
+	@InjectView(R.id.btnStart1) ImageView mBtnStart1;
+	@InjectView(R.id.btnPause) ImageView mBtnPause;
 	
-	@InjectView(R.id.btnStop1) ImageButton mBtnStop1;
-	@InjectView(R.id.btnStop2) ImageButton mBtnStop2;
+	@InjectView(R.id.btnStop1) ImageView mBtnStop1;
+	@InjectView(R.id.btnStop2) ImageView mBtnStop2;
 	@InjectView(R.id.txtDate) TimerTextView mTimerView;
 	AndroidVideoWindowImpl mVideoPreviewWindow;
 	Resource resourceArg;

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="org.itri.icl.x300.op2ca"
-    android:versionCode="7"
-    android:versionName="1.6" >
+    android:versionCode="9"
+    android:versionName="1.8" >
 
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -67,10 +67,10 @@
             android:launchMode="singleTask"
             android:screenOrientation="behind"
             android:windowSoftInputMode="stateHidden" >
-            <intent-filter>
+<!--             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+            </intent-filter> -->
         </activity>
         
         <activity
@@ -81,11 +81,15 @@
             
         <!-- android:windowSoftInputMode="adjustPan|stateHidden"  android:screenOrientation="behind" -->
         <activity
+            android:label="WebDAS"
             android:windowSoftInputMode="adjustResize" 
             android:name="org.itri.icl.x300.op2ca.webdas.Main"
             android:launchMode="singleTask"
             >
-
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+               <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
             <!--
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -127,9 +131,9 @@
             android:noHistory="true"
 			android:launchMode="singleTop"
             android:screenOrientation="behind">
-            <intent-filter>
+         <!--    <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-            </intent-filter>
+            </intent-filter> -->
          </activity>
          
                 

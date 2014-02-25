@@ -8,7 +8,7 @@ package org.linphone;
 
 public final class R {
 	public static final class id {
-		public static final int menu_settings = 0x7f09013f;
+		public static final int menu_settings = 0x7f090141;
 	}
 	public static final class style {
 		public static final int AppTheme = 0x7f080001;

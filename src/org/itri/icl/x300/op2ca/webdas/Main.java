@@ -52,16 +52,17 @@ public class Main extends OrmLiteRoboFragmentActivity<OpDB> implements OnClickLi
 	@Override @SneakyThrows
 	public void onCreate(Bundle state) {
 		super.onCreate(state);
+		log.warning("create main");
 		if (!LinphoneManager.isInstanciated()) { //已經建立帳號
 			log.warning("No service running: avoid crash by starting the launcher" + getClass().getName());
+			startActivity(getIntent().setClass(Main.this, Splash.class));
 			finish();
-			startActivity(getIntent().setClass(this, Splash.class));
 			return;
 		}
 		LinphonePreferences mNewPrefs = LinphonePreferences.instance();
 		if (mNewPrefs.getAccountCount() == 0) { // 尚未建立過帳號
 			log.warning("尚未建立過帳號");
-			startActivityForResult(new Intent(this, Login.class), 100);
+			startActivityForResult(new Intent(Main.this, Login.class), 1000);
 		} 
 		mTabHost.setup();
 		mTabManager = new TabManager(this, mTabHost, R.id.realtabcontent);
@@ -100,10 +101,10 @@ public class Main extends OrmLiteRoboFragmentActivity<OpDB> implements OnClickLi
 	
 	// login 未完成 按下back鍵, 主程式也要關閉。
 	@Override
-	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {log.warning("code: " + requestCode + " " + resultCode);
 		super.onActivityResult(requestCode, resultCode, data);
-		log.warning("code: " + requestCode + " " + resultCode);
-		if (requestCode == 100 && App.NO_REGISTER == resultCode) {
+		
+		if (requestCode == 1000 && App.NO_REGISTER == resultCode) {
 			finish();
 		}
 	}
